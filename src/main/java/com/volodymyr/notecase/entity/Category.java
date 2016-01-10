@@ -7,11 +7,12 @@ import java.sql.Timestamp;
  */
 public class Category {
     private int id;
+    private int categoryId;
     private String name;
     private int color;
     private int image;
     private Timestamp lastUpdateTimestamp;
-    private boolean enabled;
+    private boolean enabled = true;
 
     public int getId() {
         return id;
@@ -19,6 +20,14 @@ public class Category {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 
     public String getName() {

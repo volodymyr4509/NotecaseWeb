@@ -8,12 +8,12 @@ import com.volodymyr.notecase.entity.Product;
  */
 public class ProductManagerImpl implements ProductManager {
     private ProductDAOImpl productDAO = new ProductDAOImpl();
+
     public Product getProduct(int productId){
         Product product = null;
         productDAO = new ProductDAOImpl();
         try {
             product = productDAO.getProductByProductId(productId);
-
         }catch (Exception e){
             e.printStackTrace();
         }
