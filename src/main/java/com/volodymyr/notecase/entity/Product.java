@@ -1,11 +1,20 @@
 package com.volodymyr.notecase.entity;
 
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.sql.Timestamp;
 
 /**
  * Created by volodymyr on 03.01.16.
  */
+
+@Entity
+@Table(name = "product")
 public class Product {
+
+    @Id()
     private int id;
     private int userId;
     private int categoryId;
@@ -13,7 +22,7 @@ public class Product {
     private double price;
     private Timestamp createdTimestamp;
     private Timestamp lastUpdateTimestamp;
-    private boolean enabled;
+    private boolean enabled = true;
 
     public int getId() {
         return id;
