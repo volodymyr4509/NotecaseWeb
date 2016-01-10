@@ -1,21 +1,16 @@
 package com.volodymyr.notecase.entity;
 
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.sql.Timestamp;
 
 /**
  * Created by volodymyr on 03.01.16.
  */
 
-@Entity
-@Table(name = "product")
 public class Product {
 
-    @Id()
     private int id;
+    private int productId;
     private int userId;
     private int categoryId;
     private String name;
@@ -30,6 +25,14 @@ public class Product {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getProductId() {
+        return productId;
+    }
+
+    public void setProductId(int productId) {
+        this.productId = productId;
     }
 
     public int getUserId() {
