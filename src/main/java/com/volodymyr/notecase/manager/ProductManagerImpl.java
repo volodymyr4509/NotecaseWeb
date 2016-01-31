@@ -9,11 +9,11 @@ import com.volodymyr.notecase.entity.Product;
 public class ProductManagerImpl implements ProductManager {
     private ProductDAOImpl productDAO = new ProductDAOImpl();
 
-    public Product getProduct(int productId){
+    public Product getProduct(int id){
         Product product = null;
         productDAO = new ProductDAOImpl();
         try {
-            product = productDAO.getProductByProductId(productId);
+            product = productDAO.getProductById(id);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -40,6 +40,10 @@ public class ProductManagerImpl implements ProductManager {
 
     @Override
     public void addProduct(Product product) {
+        Product duplicate = getProduct(product.getId());
+        if (duplicate != null){
+            return;
+        }
         try {
             productDAO.addProduct(product);
         }catch (Exception e){

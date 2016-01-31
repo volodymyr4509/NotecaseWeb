@@ -14,8 +14,8 @@ public class ProductDAOImpl implements ProductDAO {
     private Statement stmt;
     private PreparedStatement preparedStmt;
 
-    public Product getProductByProductId(int productId) throws SQLException {
-        String query = "SELECT * FROM Product WHERE ProductId = " + productId;
+    public Product getProductById(int id) throws SQLException {
+        String query = "SELECT * FROM Product WHERE Id = " + id + " AND Enabled = true;";
         ResultSet rs = null;
         Product product = null;
         try {
@@ -24,13 +24,13 @@ public class ProductDAOImpl implements ProductDAO {
             rs = stmt.executeQuery(query);
             if (rs.next()) {
                 product = new Product();
-                product.setId(rs.getInt("Id"));
                 product.setProductId(rs.getInt("ProductId"));
+                product.setId(rs.getInt("Id"));
                 product.setUserId(rs.getInt("UserId"));
                 product.setCategoryId(rs.getInt("CategoryId"));
                 product.setName(rs.getString("Name"));
                 product.setPrice(rs.getDouble("Price"));
-                product.setCreatedTimestamp(rs.getTimestamp("CreatedTimestamp"));
+                product.setCreated(rs.getTimestamp("Created"));
                 product.setLastUpdateTimestamp(rs.getTimestamp("LastUpdateTimestamp"));
                 product.setEnabled(rs.getBoolean("Enabled"));
 
@@ -45,19 +45,19 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public int addProduct(Product product) throws SQLException {
-        String query = "INSERT INTO Product (ProductId, UserId, CategoryId, Name, Price, CreatedTimestamp, Enabled) VALUES (?, ?,?,?,?,?,?);";
+        String query = "INSERT INTO Product (Id, UserId, CategoryId, Name, Price, Created, Enabled) VALUES (?, ?,?,?,?,?,?);";
         int productId;
 
         try {
             connection = ConnectionFactory.getConnection();
             preparedStmt = connection.prepareStatement(query);
 
-            preparedStmt.setInt(1, product.getProductId());
+            preparedStmt.setInt(1, product.getId());
             preparedStmt.setInt(2, product.getUserId());
             preparedStmt.setInt(3, product.getCategoryId());
             preparedStmt.setString(4, product.getName());
             preparedStmt.setDouble(5, product.getPrice());
-            preparedStmt.setTimestamp(6, product.getCreatedTimestamp());
+            preparedStmt.setTimestamp(6, product.getCreated());
             preparedStmt.setBoolean(7, product.isEnabled());
             productId = preparedStmt.executeUpdate();
         } finally {
@@ -70,7 +70,7 @@ public class ProductDAOImpl implements ProductDAO {
     //TODO add user to be able to find accurate product
     @Override
     public void updateProduct(Product product) throws SQLException {
-        String query = "UPDATE Product SET CategoryId = ?, Name = ?, Price = ?, Enabled = ?, LastUpdateTimestamp = NOW() WHERE ProductId = ?;";
+        String query = "UPDATE Product SET CategoryId = ?, Name = ?, Price = ?, Enabled = ?, LastUpdateTimestamp = NOW() WHERE Id = ?;";
         try {
             connection = ConnectionFactory.getConnection();
             preparedStmt = connection.prepareStatement(query);
@@ -79,7 +79,7 @@ public class ProductDAOImpl implements ProductDAO {
             preparedStmt.setString(2, product.getName());
             preparedStmt.setDouble(3, product.getPrice());
             preparedStmt.setBoolean(4, product.isEnabled());
-            preparedStmt.setInt(5, product.getProductId());
+            preparedStmt.setInt(5, product.getId());
 
             preparedStmt.executeUpdate();
         } finally {
@@ -90,14 +90,10 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public void deleteProduct(int productId) throws SQLException {
-        String query = "DELETE FROM Product WHERE ProductId = " + productId + ";";
-        try {
-            connection = ConnectionFactory.getConnection();
-            stmt = connection.createStatement();
-            stmt.executeUpdate(query);
-        }finally {
-            DBUtil.close(connection);
-            DBUtil.close(stmt);
+        Product product = getProductById(productId);
+        if (product!=null){
+            product.setEnabled(false);
+            updateProduct(product);
         }
     }
 }

@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
     ProductManager productManager = new ProductManagerImpl();
 
-    @RequestMapping(value = "/get/{productId}", method = RequestMethod.GET)
-    public Product getProduct(@PathVariable int productId) {
-        return productManager.getProduct(productId);
+    @RequestMapping(value = "/get/{id}", method = RequestMethod.GET)
+    public Product getProduct(@PathVariable int id) {
+        return productManager.getProduct(id);
     }
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)

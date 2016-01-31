@@ -15,7 +15,7 @@ public class Product {
     private int categoryId;
     private String name;
     private double price;
-    private Timestamp createdTimestamp;
+    private Timestamp created;
     private Timestamp lastUpdateTimestamp;
     private boolean enabled = true;
 
@@ -67,12 +67,12 @@ public class Product {
         this.price = price;
     }
 
-    public Timestamp getCreatedTimestamp() {
-        return createdTimestamp;
+    public Timestamp getCreated() {
+        return created;
     }
 
-    public void setCreatedTimestamp(Timestamp createdTimestamp) {
-        this.createdTimestamp = createdTimestamp;
+    public void setCreated(Timestamp created) {
+        this.created = created;
     }
 
     public Timestamp getLastUpdateTimestamp() {
@@ -99,7 +99,7 @@ public class Product {
                 ", categoryId=" + categoryId +
                 ", name='" + name + '\'' +
                 ", price=" + price +
-                ", createdTimestamp=" + createdTimestamp +
+                ", created=" + created +
                 ", lastUpdateTimestamp=" + lastUpdateTimestamp +
                 ", enabled=" + enabled +
                 '}';
