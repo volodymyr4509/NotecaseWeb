@@ -20,13 +20,13 @@ public class ProductController {
     }
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public void addProduct(@RequestBody Product product) {
-        productManager.addProduct(product);
+    public boolean addProduct(@RequestBody Product product) {
+        return productManager.addProduct(product);
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.PUT)
-    public void updateProduct(@RequestBody Product product){
-        productManager.updateProduct(product);
+    public boolean updateProduct(@RequestBody Product product){
+        return productManager.updateProduct(product);
     }
 
     @RequestMapping(value = "/delete/{productId}", method = RequestMethod.DELETE)

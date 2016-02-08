@@ -7,8 +7,8 @@ import com.volodymyr.notecase.entity.Product;
  */
 public interface ProductManager {
     Product getProduct(int id);
-    void updateProduct(Product product);
+    boolean updateProduct(Product product);
     void deleteProduct(int productId);
-    void addProduct(Product product);
+    boolean addProduct(Product product);
 
 }

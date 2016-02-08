@@ -21,12 +21,15 @@ public class ProductManagerImpl implements ProductManager {
     }
 
     @Override
-    public void updateProduct(Product product) {
+    public boolean updateProduct(Product product) {
+        boolean success = true;
         try {
             productDAO.updateProduct(product);
         }catch (Exception e){
             e.printStackTrace();
+            success = false;
         }
+        return success;
     }
 
     @Override
@@ -39,15 +42,18 @@ public class ProductManagerImpl implements ProductManager {
     }
 
     @Override
-    public void addProduct(Product product) {
+    public boolean addProduct(Product product) {
+        boolean success = true;
         Product duplicate = getProduct(product.getId());
         if (duplicate != null){
-            return;
+            return false;
         }
         try {
             productDAO.addProduct(product);
         }catch (Exception e){
             e.printStackTrace();
+            success = false;
         }
+        return success;
     }
 }
