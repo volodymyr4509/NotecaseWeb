@@ -3,6 +3,7 @@ package com.volodymyr.notecase.dao;
 import com.volodymyr.notecase.entity.Product;
 import com.volodymyr.notecase.util.ConnectionFactory;
 import com.volodymyr.notecase.util.DBUtil;
+import org.apache.log4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,6 +13,8 @@ import java.util.List;
  * Created by volodymyr on 10.01.16.
  */
 public class ProductDAOImpl implements ProductDAO {
+    private static Logger log = Logger.getLogger(ProductDAOImpl.class.getName());
+
     private Connection connection;
     private Statement stmt;
     private PreparedStatement preparedStmt;
@@ -23,6 +26,8 @@ public class ProductDAOImpl implements ProductDAO {
         try {
             connection = ConnectionFactory.getConnection();
             stmt = connection.createStatement();
+            log.info("Database query: " + stmt);
+
             rs = stmt.executeQuery(query);
             if (rs.next()) {
                 product = new Product();
@@ -53,6 +58,7 @@ public class ProductDAOImpl implements ProductDAO {
         try {
             connection = ConnectionFactory.getConnection();
             preparedStmt = connection.prepareStatement(query);
+            log.info("Database query: " + preparedStmt);
 
             preparedStmt.setInt(1, product.getId());
             preparedStmt.setInt(2, product.getUserId());
@@ -82,6 +88,7 @@ public class ProductDAOImpl implements ProductDAO {
             preparedStmt.setDouble(3, product.getPrice());
             preparedStmt.setBoolean(4, product.isEnabled());
             preparedStmt.setInt(5, product.getId());
+            log.info("Database query: " + preparedStmt);
 
             preparedStmt.executeUpdate();
         } finally {
@@ -108,6 +115,8 @@ public class ProductDAOImpl implements ProductDAO {
             connection = ConnectionFactory.getConnection();
             preparedStmt = connection.prepareStatement(query);
             preparedStmt.setTimestamp(1, timestamp);
+            log.info("Database query: " + preparedStmt);
+
             rs = preparedStmt.executeQuery();
 
             while (rs.next()) {

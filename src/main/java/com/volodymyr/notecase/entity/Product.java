@@ -10,7 +10,6 @@ import java.sql.Timestamp;
  */
 
 public class Product {
-
     private int id;
     private int productId;
     private int userId;

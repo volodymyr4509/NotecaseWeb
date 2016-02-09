@@ -4,6 +4,7 @@ import com.volodymyr.notecase.entity.Category;
 import com.volodymyr.notecase.entity.Product;
 import com.volodymyr.notecase.util.ConnectionFactory;
 import com.volodymyr.notecase.util.DBUtil;
+import org.apache.log4j.Logger;
 
 import java.sql.*;
 
@@ -11,6 +12,8 @@ import java.sql.*;
  * Created by volodymyr on 10.01.16.
  */
 public class CategoryDAOImpl implements CategoryDAO {
+    private static Logger log = Logger.getLogger(CategoryDAOImpl.class.getName());
+
     private Connection connection;
     private Statement stmt;
     private PreparedStatement preparedStmt;
@@ -22,6 +25,7 @@ public class CategoryDAOImpl implements CategoryDAO {
         try {
             connection = ConnectionFactory.getConnection();
             preparedStmt = connection.prepareStatement(query);
+            log.info("Database query: " + preparedStmt);
 
             preparedStmt.setInt(1, category.getCategoryId());
             preparedStmt.setString(2, category.getName());
@@ -45,6 +49,8 @@ public class CategoryDAOImpl implements CategoryDAO {
         try {
             connection = ConnectionFactory.getConnection();
             stmt = connection.createStatement();
+            log.info("Database query: " + stmt);
+
             rs = stmt.executeQuery(query);
             if (rs.next()) {
                 category = new Category();
@@ -76,6 +82,7 @@ public class CategoryDAOImpl implements CategoryDAO {
             preparedStmt.setInt(3, category.getImage());
             preparedStmt.setBoolean(4, category.isEnabled());
             preparedStmt.setInt(5, category.getCategoryId());
+            log.info("Database query: " + preparedStmt);
 
             preparedStmt.executeUpdate();
         } finally {
