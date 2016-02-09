@@ -5,6 +5,8 @@ import com.volodymyr.notecase.util.ConnectionFactory;
 import com.volodymyr.notecase.util.DBUtil;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by volodymyr on 10.01.16.
@@ -96,4 +98,39 @@ public class ProductDAOImpl implements ProductDAO {
             updateProduct(product);
         }
     }
+
+    @Override
+    public List<Product> getLastUpdatedProducts(Timestamp timestamp) throws SQLException {
+        String query = "SELECT * FROM Product WHERE LastUpdateTimestamp >= ? AND Enabled = true;";
+        List<Product> productList = null;
+        ResultSet rs = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStmt = connection.prepareStatement(query);
+            preparedStmt.setTimestamp(1, timestamp);
+            rs = preparedStmt.executeQuery();
+
+            while (rs.next()) {
+                if (productList == null){
+                    productList = new ArrayList<>();
+                }
+                Product product = new Product();
+                product.setId(rs.getInt("Id"));
+                product.setUserId(rs.getInt("UserId"));
+                product.setCategoryId(rs.getInt("CategoryId"));
+                product.setName(rs.getString("Name"));
+                product.setPrice(rs.getDouble("Price"));
+                product.setCreated(rs.getTimestamp("Created"));
+                product.setLastUpdateTimestamp(rs.getTimestamp("LastUpdateTimestamp"));
+                product.setEnabled(rs.getBoolean("Enabled"));
+                productList.add(product);
+            }
+        } finally {
+            DBUtil.close(rs);
+            DBUtil.close(stmt);
+            DBUtil.close(connection);
+        }
+        return productList;
+    }
+
 }

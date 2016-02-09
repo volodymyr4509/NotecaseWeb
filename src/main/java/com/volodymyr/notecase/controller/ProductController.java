@@ -5,6 +5,9 @@ import com.volodymyr.notecase.manager.ProductManager;
 import com.volodymyr.notecase.manager.ProductManagerImpl;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
+import java.util.List;
+
 /**
  * Created by volodymyr on 03.01.16.
  */
@@ -25,13 +28,19 @@ public class ProductController {
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.PUT)
-    public boolean updateProduct(@RequestBody Product product){
+    public boolean updateProduct(@RequestBody Product product) {
         return productManager.updateProduct(product);
     }
 
     @RequestMapping(value = "/delete/{productId}", method = RequestMethod.DELETE)
-    public void deleteProduct(@PathVariable int productId){
-        productManager.deleteProduct(productId);
+    public boolean deleteProduct(@PathVariable int productId) {
+        return productManager.deleteProduct(productId);
+    }
+
+    @RequestMapping(value = "/getupdated/{timestamp}", method = RequestMethod.GET)
+    public List<Product> getUpdatedProduct(@PathVariable long timestamp) {
+        Timestamp time = new Timestamp(timestamp);
+        return productManager.getLastUpdatedProducts(time);
     }
 
 }

@@ -1,6 +1,8 @@
 package com.volodymyr.notecase.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.sql.Timestamp;
 
 /**
@@ -15,7 +17,9 @@ public class Product {
     private int categoryId;
     private String name;
     private double price;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private Timestamp created;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private Timestamp lastUpdateTimestamp;
     private boolean enabled = true;
 
