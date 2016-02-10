@@ -2,16 +2,22 @@ package com.volodymyr.notecase.manager;
 
 import com.volodymyr.notecase.entity.Category;
 
+import java.sql.Timestamp;
+import java.util.List;
+
 /**
  * Created by volodymyr on 10.01.16.
  */
 public interface CategoryManager {
+
     Category getCategory(int categoryId);
 
-    void updateCategory(Category category);
+    boolean updateCategory(Category category);
 
-    void deleteCategory(int categoryId);
+    boolean deleteCategory(int categoryId);
 
-    void addCategory(Category category);
+    boolean addCategory(Category category);
+
+    List<Category> getLastUpdatedCategories(Timestamp timestamp);
 
 }

@@ -5,6 +5,9 @@ import com.volodymyr.notecase.dao.CategoryDAOImpl;
 import com.volodymyr.notecase.entity.Category;
 import org.apache.log4j.Logger;
 
+import java.sql.Timestamp;
+import java.util.List;
+
 /**
  * Created by volodymyr on 10.01.16.
  */
@@ -17,7 +20,7 @@ public class CategoryManagerImpl implements CategoryManager {
     public Category getCategory(int categoryId) {
         Category category = null;
         try {
-            category = categoryDAO.getCategoryByCategoryId(categoryId);
+            category = categoryDAO.getCategoryById(categoryId);
             log.info("Retrieved Category by id = " + categoryId + ", Category: " + category);
         }catch (Exception e){
             log.error("Cannot retrieve category with id = " + categoryId, e);
@@ -26,34 +29,63 @@ public class CategoryManagerImpl implements CategoryManager {
     }
 
     @Override
-    public void updateCategory(Category category) {
+    public boolean updateCategory(Category category) {
+        boolean success = true;
         try {
             categoryDAO.updateCategory(category);
             log.info("Updated Category: " + category);
         }catch (Exception e){
             log.error("Cannot update Category: " + category);
+            success = false;
         }
+        return success;
     }
 
     @Override
-    public void deleteCategory(int categoryId) {
+    public boolean deleteCategory(int id) {
+        boolean success = true;
         try {
-            Category category = categoryDAO.getCategoryByCategoryId(categoryId);
+            Category category = categoryDAO.getCategoryById(id);
             if (category != null){
                 category.setEnabled(false);
                 categoryDAO.updateCategory(category);
+                log.info("Category deleted successfully.");
             }
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Cannot delete category", e);
+            success = false;
         }
+        return success;
     }
 
     @Override
-    public void addCategory(Category category) {
+    public boolean addCategory(Category category) {
+        boolean success = true;
+        Category duplicate = getCategory(category.getId());
+        if (duplicate != null){
+            log.info("Category not added. Duplicate Categoory with id = " + category.getId() + " found: " + category);
+            return false;
+        }
         try {
             categoryDAO.addCategory(category);
+            log.info("Category added: " + category);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Cannot add Category: " + category, e);
+            success = false;
         }
+        return success;
     }
+
+    @Override
+    public List<Category> getLastUpdatedCategories(Timestamp timestamp) {
+        List<Category> categoryList = null;
+        try {
+            categoryList = categoryDAO.getLastUpdatedProducts(timestamp);
+            log.info("Categories List retrieved from database, count = " + categoryList.size() + ", lastUpdateTimestamp = " + timestamp);
+        }catch (Exception e){
+            log.error("Cannot retrieve last updated categories since: " + timestamp, e);
+        }
+        return categoryList;
+    }
+
 }

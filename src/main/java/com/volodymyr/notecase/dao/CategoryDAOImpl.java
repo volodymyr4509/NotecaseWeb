@@ -1,12 +1,13 @@
 package com.volodymyr.notecase.dao;
 
 import com.volodymyr.notecase.entity.Category;
-import com.volodymyr.notecase.entity.Product;
 import com.volodymyr.notecase.util.ConnectionFactory;
 import com.volodymyr.notecase.util.DBUtil;
 import org.apache.log4j.Logger;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by volodymyr on 10.01.16.
@@ -20,14 +21,14 @@ public class CategoryDAOImpl implements CategoryDAO {
 
     @Override
     public int addCategory(Category category) throws SQLException {
-        String query = "INSERT INTO Category (CategoryId, Name, Color, Image, LastUpdateTimestamp, Enabled) VALUES (?,?,?,?,?,?);";
+        String query = "INSERT INTO Category (Id, Name, Color, Image, LastUpdateTimestamp, Enabled) VALUES (?,?,?,?,?,?);";
         int categoryId;
         try {
             connection = ConnectionFactory.getConnection();
             preparedStmt = connection.prepareStatement(query);
             log.info("Database query: " + preparedStmt);
 
-            preparedStmt.setInt(1, category.getCategoryId());
+            preparedStmt.setInt(1, category.getId());
             preparedStmt.setString(2, category.getName());
             preparedStmt.setInt(3, category.getColor());
             preparedStmt.setInt(4, category.getImage());
@@ -42,8 +43,8 @@ public class CategoryDAOImpl implements CategoryDAO {
     }
 
     @Override
-    public Category getCategoryByCategoryId(int categoryId) throws SQLException {
-        String query = "SELECT * FROM Category WHERE CategoryId = " + categoryId;
+    public Category getCategoryById(int id) throws SQLException {
+        String query = "SELECT * FROM Category WHERE Id = " + id;
         ResultSet rs = null;
         Category category = null;
         try {
@@ -61,18 +62,18 @@ public class CategoryDAOImpl implements CategoryDAO {
                 category.setImage(rs.getInt("Image"));
                 category.setLastUpdateTimestamp(rs.getTimestamp("LastUpdateTimestamp"));
                 category.setEnabled(rs.getBoolean("Enabled"));
-
             }
         } finally {
             DBUtil.close(rs);
             DBUtil.close(stmt);
             DBUtil.close(connection);
         }
-        return category;    }
+        return category;
+    }
 
     @Override
     public void updateCategory(Category category) throws SQLException {
-        String query = "UPDATE Category SET Name = ?, Color = ?, Image = ?, Enabled = ?, LastUpdateTimestamp = NOW() WHERE CategoryId = ?;";
+        String query = "UPDATE Category SET Name = ?, Color = ?, Image = ?, Enabled = ?, LastUpdateTimestamp = NOW() WHERE Id = ?;";
         try {
             connection = ConnectionFactory.getConnection();
             preparedStmt = connection.prepareStatement(query);
@@ -81,7 +82,7 @@ public class CategoryDAOImpl implements CategoryDAO {
             preparedStmt.setInt(2, category.getColor());
             preparedStmt.setInt(3, category.getImage());
             preparedStmt.setBoolean(4, category.isEnabled());
-            preparedStmt.setInt(5, category.getCategoryId());
+            preparedStmt.setInt(5, category.getId());
             log.info("Database query: " + preparedStmt);
 
             preparedStmt.executeUpdate();
@@ -91,6 +92,39 @@ public class CategoryDAOImpl implements CategoryDAO {
         }
     }
 
+    @Override
+    public List<Category> getLastUpdatedProducts(Timestamp timestamp) throws SQLException {
+        String query = "SELECT * FROM Category WHERE LastUpdateTimestamp >= ? AND Enabled = true;";
+        List<Category> categoryList = null;
+        ResultSet rs = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStmt = connection.prepareStatement(query);
+            preparedStmt.setTimestamp(1, timestamp);
+            log.info("Database query: " + preparedStmt);
 
+            rs = preparedStmt.executeQuery();
+
+            while (rs.next()) {
+                if (categoryList == null) {
+                    categoryList = new ArrayList<>();
+                }
+                Category category = new Category();
+                category.setId(rs.getInt("Id"));
+                category.setCategoryId(rs.getInt("CategoryId"));
+                category.setName(rs.getString("Name"));
+                category.setColor(rs.getInt("Color"));
+                category.setImage(rs.getInt("Image"));
+                category.setLastUpdateTimestamp(rs.getTimestamp("LastUpdateTimestamp"));
+                category.setEnabled(rs.getBoolean("Enabled"));
+                categoryList.add(category);
+            }
+        } finally {
+            DBUtil.close(rs);
+            DBUtil.close(stmt);
+            DBUtil.close(connection);
+        }
+        return categoryList;
+    }
 }
 

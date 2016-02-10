@@ -6,6 +6,9 @@ import com.volodymyr.notecase.manager.CategoryManagerImpl;
 import org.apache.log4j.Logger;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
+import java.util.List;
+
 /**
  * Created by volodymyr on 10.01.16.
  */
@@ -19,26 +22,33 @@ public class CategoryController {
 
     @RequestMapping(value = "/get/{categoryId}", method = RequestMethod.GET)
     public Category getCategory(@PathVariable int categoryId) {
-        log.info("Get Category with id = "  + categoryId);
+        log.info("Get Category with id = " + categoryId);
         return categoryManager.getCategory(categoryId);
     }
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public void addCategory(@RequestBody Category category) {
+    public boolean addCategory(@RequestBody Category category) {
         log.info("Add new Category: " + category);
-        categoryManager.addCategory(category);
+        return categoryManager.addCategory(category);
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.PUT)
-    public void updateCategory(@RequestBody Category category) {
+    public boolean updateCategory(@RequestBody Category category) {
         log.info("Update Category with id = " + category.getId() + ", Category: " + category);
-        categoryManager.updateCategory(category);
+        return categoryManager.updateCategory(category);
     }
 
     @RequestMapping(value = "/delete/{categoryId}")
-    public void deleteCategory(@PathVariable int categoryId) {
+    public boolean deleteCategory(@PathVariable int categoryId) {
         log.info("Delete Category with id = " + categoryId);
-        categoryManager.deleteCategory(categoryId);
+        return categoryManager.deleteCategory(categoryId);
+    }
+
+    @RequestMapping(value = "/getupdated/{timestamp}", method = RequestMethod.GET)
+    public List<Category> getUpdatedCategories(@PathVariable long timestamp) {
+        Timestamp time = new Timestamp(timestamp);
+        log.info("Get updated products from lastUpdateTimestamp = " + time);
+        return categoryManager.getLastUpdatedCategories(time);
     }
 
 }
