@@ -45,7 +45,7 @@ public class CategoryController {
     }
 
     @RequestMapping(value = "/getupdated/{timestamp}", method = RequestMethod.GET)
-    public List<Category> getUpdatedCategories(@PathVariable long timestamp) {
+    public @ResponseBody List<Category> getUpdatedCategories(@PathVariable long timestamp) {
         Timestamp time = new Timestamp(timestamp);
         log.info("Get updated products from lastUpdateTimestamp = " + time);
         return categoryManager.getLastUpdatedCategories(time);

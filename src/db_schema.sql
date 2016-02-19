@@ -31,3 +31,10 @@ CREATE TABLE User
   LastUpdateTimestamp TIMESTAMP    NOT NULL DEFAULT NOW(),
   Enabled             TINYINT      NOT NULL DEFAULT '1'
 );
+
+CREATE TABLE UserFriends
+(
+  UserId              INT(11)   NOT NULL,
+  FriendId            INT(11)   NOT NULL,
+  LastUpdateTimestamp TIMESTAMP NOT NULL  DEFAULT NOW()
+)

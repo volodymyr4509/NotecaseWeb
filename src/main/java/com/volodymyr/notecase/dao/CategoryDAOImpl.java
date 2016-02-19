@@ -27,7 +27,6 @@ public class CategoryDAOImpl implements CategoryDAO {
             connection = ConnectionFactory.getConnection();
             preparedStmt = connection.prepareStatement(query);
             log.info("Database query: " + preparedStmt);
-
             preparedStmt.setInt(1, category.getId());
             preparedStmt.setString(2, category.getName());
             preparedStmt.setInt(3, category.getColor());

@@ -81,7 +81,7 @@ public class CategoryManagerImpl implements CategoryManager {
         List<Category> categoryList = null;
         try {
             categoryList = categoryDAO.getLastUpdatedProducts(timestamp);
-            log.info("Categories List retrieved from database, count = " + categoryList.size() + ", lastUpdateTimestamp = " + timestamp);
+            log.info("Categories List retrieved from database, lastUpdateTimestamp = " + timestamp);
         }catch (Exception e){
             log.error("Cannot retrieve last updated categories since: " + timestamp, e);
         }

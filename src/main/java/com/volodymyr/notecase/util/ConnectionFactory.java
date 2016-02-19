@@ -15,7 +15,7 @@ public class ConnectionFactory {
     private static ConnectionFactory instance = new ConnectionFactory();
     public static final String URL = "jdbc:mysql://localhost/notecase";
     public static final String USER = "root";
-    public static final String PASSWORD = "12345";
+    public static final String PASSWORD = "parashka1268";
     public static final String DRIVER = "com.mysql.jdbc.Driver";
 
     private ConnectionFactory(){

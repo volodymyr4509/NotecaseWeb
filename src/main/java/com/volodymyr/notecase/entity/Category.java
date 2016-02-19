@@ -1,5 +1,7 @@
 package com.volodymyr.notecase.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.sql.Timestamp;
 
 /**
@@ -11,6 +13,7 @@ public class Category {
     private String name;
     private int color;
     private int image;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private Timestamp lastUpdateTimestamp;
     private boolean enabled = true;
 
