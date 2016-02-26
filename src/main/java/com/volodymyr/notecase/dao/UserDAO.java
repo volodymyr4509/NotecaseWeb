@@ -10,6 +10,8 @@ import java.util.List;
  */
 public interface UserDAO {
 
+    User getUserById(int id) throws SQLException;
+
     int addUser(User user) throws SQLException;
 
     void updateUser(User user) throws SQLException;

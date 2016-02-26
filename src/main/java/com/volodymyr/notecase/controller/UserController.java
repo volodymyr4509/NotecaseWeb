@@ -26,7 +26,7 @@ public class UserController {
 //    }
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public boolean addUser(@RequestBody User user) {
+    public int addUser(@RequestBody User user) {
         log.info("Add new User: " + user);
         return userManager.addUser(user);
     }

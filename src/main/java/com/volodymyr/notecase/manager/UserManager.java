@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface UserManager {
 
-    boolean addUser(User user);
+    int addUser(User user);
 
     boolean updateUser(User user);
 

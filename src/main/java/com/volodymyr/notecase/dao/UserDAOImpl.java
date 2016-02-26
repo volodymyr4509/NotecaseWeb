@@ -47,18 +47,30 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public int addUser(User user) throws SQLException {
-        String query = "INSERT INTO User (UserName, Email, Enabled) VALUES (?,?,?);";
+        String query = "INSERT INTO User (UserName, IdToken, Email, Enabled) VALUES (?,?,?,?);";
         int userId;
         try {
             connection = ConnectionFactory.getConnection();
-            preparedStmt = connection.prepareStatement(query);
+            preparedStmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             log.info("Database query: " + preparedStmt);
 
             preparedStmt.setString(1, user.getUserName());
-            preparedStmt.setString(2, user.getEmail());
-            preparedStmt.setBoolean(3, user.isEnabled());
+            preparedStmt.setString(2, user.getIdToken());
+            preparedStmt.setString(3, user.getEmail());
+            preparedStmt.setBoolean(4, user.isEnabled());
 
-            userId = preparedStmt.executeUpdate();
+            int affectedRows = preparedStmt.executeUpdate();
+            if (affectedRows == 0){
+                throw new SQLException("Creating user failed, no rows affected");
+            }
+            try (ResultSet generatedKeys = preparedStmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    userId = generatedKeys.getInt(1);
+                }
+                else {
+                    throw new SQLException("Creating user failed, no ID obtained.");
+                }
+            }
         } finally {
             DBUtil.close(preparedStmt);
             DBUtil.close(connection);
@@ -105,6 +117,7 @@ public class UserDAOImpl implements UserDAO {
         try {
             connection = ConnectionFactory.getConnection();
             preparedStmt = connection.prepareStatement(query);
+            preparedStmt.setInt(1, userId);
 
             log.info("Database query: " + preparedStmt);
 

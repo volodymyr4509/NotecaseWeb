@@ -8,10 +8,10 @@ import java.sql.Timestamp;
 public class User {
     private int id;
     private String userName;
-    private String userPassword;
+    private String idToken;
     private String email;
     private Timestamp lastUpdateTimestamp;
-    private boolean enabled;
+    private boolean enabled = true;
 
     public int getId() {
         return id;
@@ -29,12 +29,12 @@ public class User {
         this.userName = userName;
     }
 
-    public String getUserPassword() {
-        return userPassword;
+    public String getIdToken() {
+        return idToken;
     }
 
-    public void setUserPassword(String userPassword) {
-        this.userPassword = userPassword;
+    public void setIdToken(String idToken) {
+        this.idToken = idToken;
     }
 
     public String getEmail() {
@@ -66,10 +66,11 @@ public class User {
         return "User{" +
                 "id=" + id +
                 ", userName='" + userName + '\'' +
-                ", userPassword='" + userPassword + '\'' +
+                ", idToken='" + idToken + '\'' +
                 ", email='" + email + '\'' +
                 ", lastUpdateTimestamp=" + lastUpdateTimestamp +
                 ", enabled=" + enabled +
                 '}';
     }
+
 }
