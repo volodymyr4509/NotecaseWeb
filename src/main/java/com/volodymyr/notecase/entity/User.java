@@ -7,8 +7,9 @@ import java.sql.Timestamp;
  */
 public class User {
     private int id;
-    private String userName;
+    private String name;
     private String idToken;
+    private String authToken;
     private String email;
     private Timestamp lastUpdateTimestamp;
     private boolean enabled = true;
@@ -21,12 +22,12 @@ public class User {
         this.id = id;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getName() {
+        return name;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getIdToken() {
@@ -35,6 +36,14 @@ public class User {
 
     public void setIdToken(String idToken) {
         this.idToken = idToken;
+    }
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
     }
 
     public String getEmail() {
@@ -65,12 +74,12 @@ public class User {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", userName='" + userName + '\'' +
+                ", name='" + name + '\'' +
                 ", idToken='" + idToken + '\'' +
+                ", authToken='" + authToken + '\'' +
                 ", email='" + email + '\'' +
                 ", lastUpdateTimestamp=" + lastUpdateTimestamp +
                 ", enabled=" + enabled +
                 '}';
     }
-
 }

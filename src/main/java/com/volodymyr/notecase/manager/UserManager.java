@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface UserManager {
 
-    int addUser(User user);
+    String addUser(User user);
 
     boolean updateUser(User user);
 
@@ -19,5 +19,5 @@ public interface UserManager {
 
     boolean registerIdToken(String idToken);
 
-
+    String authenticateUser(String idToken);
 }

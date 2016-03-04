@@ -25,9 +25,9 @@ CREATE TABLE Category
 CREATE TABLE User
 (
   Id                  INT(11)      NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  UserName            VARCHAR(256) NOT NULL,
-  IdToken             VARCHAR(256) NOT NULL,
+  Name                VARCHAR(256) NOT NULL,
   Email               VARCHAR(256) NOT NULL,
+  AuthToken           VARCHAR(256) NOT NULL,
   LastUpdateTimestamp TIMESTAMP    NOT NULL DEFAULT NOW(),
   Enabled             TINYINT      NOT NULL DEFAULT '1'
 );

@@ -26,7 +26,7 @@ public class UserController {
 //    }
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public int addUser(@RequestBody User user) {
+    public String addUser(@RequestBody User user) {
         log.info("Add new User: " + user);
         return userManager.addUser(user);
     }
@@ -53,6 +53,12 @@ public class UserController {
     public boolean registerIdToken(@RequestBody String idToken) {
         log.info("RegisterIdToken post request");
         return userManager.registerIdToken(idToken);
+    }
+
+    @RequestMapping(value = "/authenticate",method = RequestMethod.POST)
+    public String authenticateUser(@RequestBody String idToken){
+        log.info("AuthenticateUser post request");
+        return userManager.authenticateUser(idToken);
     }
 
 }

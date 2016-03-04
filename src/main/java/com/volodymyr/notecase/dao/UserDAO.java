@@ -14,12 +14,14 @@ public interface UserDAO {
 
     int addUser(User user) throws SQLException;
 
-    void updateUser(User user) throws SQLException;
+    int updateUser(User user) throws SQLException;
     
     boolean deleteUser(int userId) throws SQLException;
 
     List<User> getAllTrustedUsers(int userId) throws SQLException;
 
     boolean registerIdToken(String idToken);
+
+    User getUserByEmail(String email) throws SQLException;
 
 }

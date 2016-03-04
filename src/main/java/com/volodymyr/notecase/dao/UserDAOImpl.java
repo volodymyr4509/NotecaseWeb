@@ -32,7 +32,7 @@ public class UserDAOImpl implements UserDAO {
             if (rs.next()) {
                 user = new User();
                 user.setId(rs.getInt("Id"));
-                user.setUserName(rs.getString("UserName"));
+                user.setName(rs.getString("UserName"));
                 user.setEmail(rs.getString("Email"));
                 user.setLastUpdateTimestamp(rs.getTimestamp("LastUpdateTimestamp"));
                 user.setEnabled(rs.getBoolean("Enabled"));
@@ -47,27 +47,26 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public int addUser(User user) throws SQLException {
-        String query = "INSERT INTO User (UserName, IdToken, Email, Enabled) VALUES (?,?,?,?);";
+        String query = "INSERT INTO User (Name, Email, AuthToken, Enabled) VALUES (?,?,?,?);";
         int userId;
         try {
             connection = ConnectionFactory.getConnection();
             preparedStmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             log.info("Database query: " + preparedStmt);
 
-            preparedStmt.setString(1, user.getUserName());
-            preparedStmt.setString(2, user.getIdToken());
-            preparedStmt.setString(3, user.getEmail());
+            preparedStmt.setString(1, user.getName());
+            preparedStmt.setString(2, user.getEmail());
+            preparedStmt.setString(3, user.getAuthToken());
             preparedStmt.setBoolean(4, user.isEnabled());
 
             int affectedRows = preparedStmt.executeUpdate();
-            if (affectedRows == 0){
+            if (affectedRows == 0) {
                 throw new SQLException("Creating user failed, no rows affected");
             }
             try (ResultSet generatedKeys = preparedStmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     userId = generatedKeys.getInt(1);
-                }
-                else {
+                } else {
                     throw new SQLException("Creating user failed, no ID obtained.");
                 }
             }
@@ -79,20 +78,21 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public void updateUser(User user) throws SQLException {
-        String query = "UPDATE User SET UserName = ?, Email = ?, Enabled = ?, LastUpdateTimestamp = NOW() WHERE Id = ?;";
+    public int updateUser(User user) throws SQLException {
+        String query = "UPDATE User SET Name = ?, AuthToken = ?, Enabled = ?, LastUpdateTimestamp = NOW() WHERE Id = ? AND Email = ?;";
         try {
             connection = ConnectionFactory.getConnection();
             preparedStmt = connection.prepareStatement(query);
 
-            preparedStmt.setString(1, user.getUserName());
-            preparedStmt.setString(2, user.getEmail());
+            preparedStmt.setString(1, user.getName());
+            preparedStmt.setString(2, user.getAuthToken());
             preparedStmt.setBoolean(3, user.isEnabled());
             preparedStmt.setInt(4, user.getId());
+            preparedStmt.setString(5, user.getEmail());
 
             log.info("Database query: " + preparedStmt);
 
-            preparedStmt.executeUpdate();
+            return preparedStmt.executeUpdate();
         } finally {
             DBUtil.close(connection);
             DBUtil.close(preparedStmt);
@@ -100,17 +100,19 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public boolean deleteUser(int userId) throws SQLException{
+    public boolean deleteUser(int userId) throws SQLException {
         User user = getUserById(userId);
-        if (user!=null){
+        int affectedRows = 0;
+        if (user != null) {
             user.setEnabled(false);
-            updateUser(user);
+            affectedRows = updateUser(user);
         }
-        return false;
+
+        return (affectedRows > 0);
     }
 
     @Override
-    public List<User> getAllTrustedUsers(int userId) throws SQLException{
+    public List<User> getAllTrustedUsers(int userId) throws SQLException {
         String query = "SELECT * FROM User u JOIN UserFriends uf ON u.Id = uf.FriendId WHERE uf.UserId = ?;";
         List<User> users = null;
         ResultSet rs = null;
@@ -122,21 +124,21 @@ public class UserDAOImpl implements UserDAO {
             log.info("Database query: " + preparedStmt);
 
             rs = preparedStmt.executeQuery();
-            while (rs.next()){
-                if (users == null){
+            while (rs.next()) {
+                if (users == null) {
                     users = new ArrayList<>();
                 }
 
                 User user = new User();
                 user.setId(rs.getInt("Id"));
-                user.setUserName(rs.getString("UserName"));
+                user.setName(rs.getString("UserName"));
                 user.setEmail(rs.getString("Email"));
                 user.setLastUpdateTimestamp(rs.getTimestamp("LastUpdateTimestamp"));
                 user.setEnabled(rs.getBoolean("Enabled"));
 
                 users.add(user);
             }
-        }finally {
+        } finally {
             DBUtil.close(connection);
             DBUtil.close(stmt);
             DBUtil.close(rs);
@@ -147,6 +149,34 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public boolean registerIdToken(String idToken) {
         return false;
+    }
+
+    @Override
+    public User getUserByEmail(String email) throws SQLException {
+        String query = "SELECT * FROM User WHERE Email = '" + email + "' AND Enabled = true;";
+        ResultSet rs = null;
+        User user = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            stmt = connection.createStatement();
+            log.info("Database query: " + stmt);
+
+            rs = stmt.executeQuery(query);
+            if (rs.next()) {
+                user = new User();
+                user.setId(rs.getInt("Id"));
+                user.setName(rs.getString("Name"));
+                user.setEmail(rs.getString("Email"));
+                user.setAuthToken(rs.getString("AuthToken"));
+                user.setLastUpdateTimestamp(rs.getTimestamp("LastUpdateTimestamp"));
+                user.setEnabled(rs.getBoolean("Enabled"));
+            }
+        } finally {
+            DBUtil.close(rs);
+            DBUtil.close(stmt);
+            DBUtil.close(connection);
+        }
+        return user;
     }
 }
 
