@@ -12,6 +12,8 @@ public interface UserDAO {
 
     User getUserById(int id) throws SQLException;
 
+    User getUserByAuthToken(String authToken) throws SQLException;
+
     int addUser(User user) throws SQLException;
 
     int updateUser(User user) throws SQLException;

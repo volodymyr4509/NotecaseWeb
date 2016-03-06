@@ -17,7 +17,7 @@ public interface UserManager {
 
     List<User> getAllTrustedUsers(int userId);
 
-    boolean registerIdToken(String idToken);
-
     String authenticateUser(String idToken);
+
+    User getUserByAuthToken(String authToken);
 }

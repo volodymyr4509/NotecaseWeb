@@ -10,6 +10,7 @@ import com.volodymyr.notecase.dao.UserDAOImpl;
 import com.volodymyr.notecase.entity.User;
 import org.apache.log4j.Logger;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -96,11 +97,6 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public boolean registerIdToken(String idToken) {
-        return false;
-    }
-
-    @Override
     public String authenticateUser(String idToken) {
         NetHttpTransport transport = new NetHttpTransport();
         JsonFactory jsonFactory = new JacksonFactory();
@@ -131,6 +127,16 @@ public class UserManagerImpl implements UserManager {
             }
         } catch (Exception e) {
             log.error("Cannot authenticate user", e);
+        }
+        return null;
+    }
+
+    @Override
+    public User getUserByAuthToken(String authToken) {
+        try {
+            return userDAO.getUserByAuthToken(authToken);
+        }catch (Exception e){
+            log.error("Cannot get user by authToken: " + authToken, e);
         }
         return null;
     }

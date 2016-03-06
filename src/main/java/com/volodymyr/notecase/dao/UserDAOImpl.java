@@ -32,8 +32,37 @@ public class UserDAOImpl implements UserDAO {
             if (rs.next()) {
                 user = new User();
                 user.setId(rs.getInt("Id"));
-                user.setName(rs.getString("UserName"));
+                user.setName(rs.getString("Name"));
                 user.setEmail(rs.getString("Email"));
+                user.setEmail(rs.getString("AuthToken"));
+                user.setLastUpdateTimestamp(rs.getTimestamp("LastUpdateTimestamp"));
+                user.setEnabled(rs.getBoolean("Enabled"));
+            }
+        } finally {
+            DBUtil.close(rs);
+            DBUtil.close(stmt);
+            DBUtil.close(connection);
+        }
+        return user;
+    }
+
+    @Override
+    public User getUserByAuthToken(String authToken) throws SQLException {
+        String query = "SELECT * FROM User WHERE AuthToken = '" + authToken + "' AND Enabled = true;";
+        ResultSet rs = null;
+        User user = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            stmt = connection.createStatement();
+            log.info("Database query: " + stmt);
+
+            rs = stmt.executeQuery(query);
+            if (rs.next()) {
+                user = new User();
+                user.setId(rs.getInt("Id"));
+                user.setName(rs.getString("Name"));
+                user.setEmail(rs.getString("Email"));
+                user.setEmail(rs.getString("AuthToken"));
                 user.setLastUpdateTimestamp(rs.getTimestamp("LastUpdateTimestamp"));
                 user.setEnabled(rs.getBoolean("Enabled"));
             }

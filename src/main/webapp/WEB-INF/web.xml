@@ -15,4 +15,16 @@
         <servlet-name>spring</servlet-name>
         <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
+
+
+    <filter>
+        <filter-name>RestAuthenticationFilter</filter-name>
+        <filter-class>com.volodymyr.notecase.util.RestAuthenticationFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>RestAuthenticationFilter</filter-name>
+        <url-pattern>/rest/*</url-pattern>
+    </filter-mapping>
+
 </web-app>

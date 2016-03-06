@@ -49,12 +49,6 @@ public class UserController {
         return userManager.getAllTrustedUsers(userId);
     }
 
-    @RequestMapping(value = "/registeridtoken", method = RequestMethod.POST)
-    public boolean registerIdToken(@RequestBody String idToken) {
-        log.info("RegisterIdToken post request");
-        return userManager.registerIdToken(idToken);
-    }
-
     @RequestMapping(value = "/authenticate",method = RequestMethod.POST)
     public String authenticateUser(@RequestBody String idToken){
         log.info("AuthenticateUser post request");
