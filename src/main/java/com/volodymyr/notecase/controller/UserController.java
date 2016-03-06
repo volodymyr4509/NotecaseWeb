@@ -16,6 +16,7 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
     private static Logger log = Logger.getLogger(UserController.class.getName());
+    public static final String AUTHENTICATION_TOKEN = "AuthToken";
 
     private UserManager userManager = new UserManagerImpl();
 

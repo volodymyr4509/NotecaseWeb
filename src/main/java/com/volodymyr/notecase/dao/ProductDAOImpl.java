@@ -19,8 +19,8 @@ public class ProductDAOImpl implements ProductDAO {
     private Statement stmt;
     private PreparedStatement preparedStmt;
 
-    public Product getProductById(int id) throws SQLException {
-        String query = "SELECT * FROM Product WHERE Id = " + id + " AND Enabled = true;";
+    public Product getProductById(int id, int userId) throws SQLException {
+        String query = "SELECT * FROM Product WHERE Id = " + id + " AND UserId = " + userId + " AND Enabled = true;";
         ResultSet rs = null;
         Product product = null;
         try {
@@ -51,8 +51,8 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public int addProduct(Product product) throws SQLException {
-        String query = "INSERT INTO Product (Id, UserId, CategoryId, Name, Price, Created, Enabled) VALUES (?, ?,?,?,?,?,?);";
+    public int addProduct(Product product, int userId) throws SQLException {
+        String query = "INSERT INTO Product (Id, UserId, CategoryId, Name, Price, Created, Enabled) VALUES (?,?,?,?,?,?,?);";
         int productId;
 
         try {
@@ -61,7 +61,7 @@ public class ProductDAOImpl implements ProductDAO {
             log.info("Database query: " + preparedStmt);
 
             preparedStmt.setInt(1, product.getId());
-            preparedStmt.setInt(2, product.getUserId());
+            preparedStmt.setInt(2, userId);
             preparedStmt.setInt(3, product.getCategoryId());
             preparedStmt.setString(4, product.getName());
             preparedStmt.setDouble(5, product.getPrice());
@@ -75,10 +75,9 @@ public class ProductDAOImpl implements ProductDAO {
         return productId;
     }
 
-    //TODO add user to be able to find accurate product
     @Override
-    public void updateProduct(Product product) throws SQLException {
-        String query = "UPDATE Product SET CategoryId = ?, Name = ?, Price = ?, Enabled = ?, LastUpdateTimestamp = NOW() WHERE Id = ?;";
+    public void updateProduct(Product product, int userId) throws SQLException {
+        String query = "UPDATE Product SET CategoryId = ?, Name = ?, Price = ?, Enabled = ?, LastUpdateTimestamp = NOW() WHERE Id = ? AND  UserId = ? AND Enabled = TRUE;";
         try {
             connection = ConnectionFactory.getConnection();
             preparedStmt = connection.prepareStatement(query);
@@ -88,6 +87,7 @@ public class ProductDAOImpl implements ProductDAO {
             preparedStmt.setDouble(3, product.getPrice());
             preparedStmt.setBoolean(4, product.isEnabled());
             preparedStmt.setInt(5, product.getId());
+            preparedStmt.setInt(6, userId);
             log.info("Database query: " + preparedStmt);
 
             preparedStmt.executeUpdate();
@@ -98,17 +98,17 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public void deleteProduct(int productId) throws SQLException {
-        Product product = getProductById(productId);
-        if (product!=null){
+    public void deleteProduct(int id, int userId) throws SQLException {
+        Product product = getProductById(id, userId);
+        if (product != null) {
             product.setEnabled(false);
-            updateProduct(product);
+            updateProduct(product, userId);
         }
     }
 
     @Override
-    public List<Product> getLastUpdatedProducts(Timestamp timestamp) throws SQLException {
-        String query = "SELECT * FROM Product WHERE LastUpdateTimestamp >= ? AND Enabled = true;";
+    public List<Product> getLastUpdatedProducts(Timestamp timestamp, int userId) throws SQLException {
+        String query = "SELECT * FROM Product WHERE UserId = " + userId + " LastUpdateTimestamp >= ? AND Enabled = TRUE;";
         List<Product> productList = null;
         ResultSet rs = null;
         try {
@@ -120,7 +120,7 @@ public class ProductDAOImpl implements ProductDAO {
             rs = preparedStmt.executeQuery();
 
             while (rs.next()) {
-                if (productList == null){
+                if (productList == null) {
                     productList = new ArrayList<>();
                 }
                 Product product = new Product();

@@ -2,7 +2,10 @@ package com.volodymyr.notecase.manager;
 
 import com.volodymyr.notecase.dao.CategoryDAO;
 import com.volodymyr.notecase.dao.CategoryDAOImpl;
+import com.volodymyr.notecase.dao.UserDAO;
+import com.volodymyr.notecase.dao.UserDAOImpl;
 import com.volodymyr.notecase.entity.Category;
+import com.volodymyr.notecase.entity.User;
 import org.apache.log4j.Logger;
 
 import java.sql.Timestamp;
@@ -15,12 +18,17 @@ public class CategoryManagerImpl implements CategoryManager {
     private static Logger log = Logger.getLogger(CategoryManagerImpl.class.getName());
 
     private CategoryDAO categoryDAO = new CategoryDAOImpl();
+    private UserDAO userDAO = new UserDAOImpl();
 
     @Override
-    public Category getCategory(int categoryId) {
+    public Category getCategory(int categoryId, String authToken) {
         Category category = null;
         try {
-            category = categoryDAO.getCategoryById(categoryId);
+            User user = userDAO.getUserByAuthToken(authToken);
+            if (user == null){
+                return null;
+            }
+            category = categoryDAO.getCategoryById(categoryId, user.getId());
             log.info("Retrieved Category by id = " + categoryId + ", Category: " + category);
         }catch (Exception e){
             log.error("Cannot retrieve category with id = " + categoryId, e);
@@ -29,10 +37,14 @@ public class CategoryManagerImpl implements CategoryManager {
     }
 
     @Override
-    public boolean updateCategory(Category category) {
+    public boolean updateCategory(Category category, String authToken) {
         boolean success = true;
         try {
-            categoryDAO.updateCategory(category);
+            User user = userDAO.getUserByAuthToken(authToken);
+            if (user == null){
+                return false;
+            }
+            categoryDAO.updateCategory(category, user.getId());
             log.info("Updated Category: " + category);
         }catch (Exception e){
             log.error("Cannot update Category: " + category);
@@ -42,14 +54,16 @@ public class CategoryManagerImpl implements CategoryManager {
     }
 
     @Override
-    public boolean deleteCategory(int id) {
-        boolean success = true;
+    public boolean deleteCategory(int id, String authToken) {
+        boolean success = false;
         try {
-            Category category = categoryDAO.getCategoryById(id);
-            if (category != null){
+            User user = userDAO.getUserByAuthToken(authToken);
+            Category category = getCategory(id, authToken);
+            if (category != null && user != null){
                 category.setEnabled(false);
-                categoryDAO.updateCategory(category);
+                categoryDAO.updateCategory(category, user.getId());
                 log.info("Category deleted successfully.");
+                success = true;
             }
         }catch (Exception e){
             log.error("Cannot delete category", e);
@@ -59,15 +73,19 @@ public class CategoryManagerImpl implements CategoryManager {
     }
 
     @Override
-    public boolean addCategory(Category category) {
+    public boolean addCategory(Category category, String authToken) {
         boolean success = true;
-        Category duplicate = getCategory(category.getId());
+        Category duplicate = getCategory(category.getId(), authToken);
         if (duplicate != null){
             log.info("Category not added. Duplicate Categoory with id = " + category.getId() + " found: " + category);
             return false;
         }
         try {
-            categoryDAO.addCategory(category);
+            User user = userDAO.getUserByAuthToken(authToken);
+            if (user == null){
+                return false;
+            }
+            categoryDAO.addCategory(category, user.getId());
             log.info("Category added: " + category);
         }catch (Exception e){
             log.error("Cannot add Category: " + category, e);
@@ -77,10 +95,14 @@ public class CategoryManagerImpl implements CategoryManager {
     }
 
     @Override
-    public List<Category> getLastUpdatedCategories(Timestamp timestamp) {
+    public List<Category> getLastUpdatedCategories(Timestamp timestamp, String authToken) {
         List<Category> categoryList = null;
         try {
-            categoryList = categoryDAO.getLastUpdatedProducts(timestamp);
+            User user = userDAO.getUserByAuthToken(authToken);
+            if (user == null){
+                return null;
+            }
+            categoryList = categoryDAO.getLastUpdatedProducts(timestamp, user.getId());
             log.info("Categories List retrieved from database, lastUpdateTimestamp = " + timestamp);
         }catch (Exception e){
             log.error("Cannot retrieve last updated categories since: " + timestamp, e);

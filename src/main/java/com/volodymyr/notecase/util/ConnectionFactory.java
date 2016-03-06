@@ -14,31 +14,32 @@ public class ConnectionFactory {
 
     private static ConnectionFactory instance = new ConnectionFactory();
     public static final String URL = "jdbc:mysql://localhost/notecase";
+    public static final String ENCODING = "?useUnicode=true&characterEncoding=UTF-8";
     public static final String USER = "root";
     public static final String PASSWORD = "parashka1268";
     public static final String DRIVER = "com.mysql.jdbc.Driver";
 
-    private ConnectionFactory(){
+    private ConnectionFactory() {
         try {
             Class.forName(DRIVER);
-        }catch (ClassNotFoundException e){
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
 
-    private Connection createConnection(){
+    private Connection createConnection() {
         Connection connection = null;
         try {
-            connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            connection = DriverManager.getConnection(URL + ENCODING, USER, PASSWORD);
             log.debug("Create database connection for Url: " + URL + ", User: " + USER);
-        }catch (SQLException e){
+        } catch (SQLException e) {
             log.error("Cannot connect to database with URL: " + URL + ", USER: " + USER + ", PASSWORD: " + PASSWORD.replaceAll(".", "?"));
             e.printStackTrace();
         }
         return connection;
     }
 
-    public static Connection getConnection(){
+    public static Connection getConnection() {
         log.debug("Get database connection...");
         return instance.createConnection();
     }

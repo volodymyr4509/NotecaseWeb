@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 public class Category {
     private int id;
     private int categoryId;
+    private int userId;
     private String name;
     private int color;
     private int image;
@@ -31,6 +32,14 @@ public class Category {
 
     public void setCategoryId(int categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public String getName() {
@@ -77,6 +86,7 @@ public class Category {
     public String toString() {
         return "Category{" +
                 "id=" + id +
+                "userid=" + userId +
                 ", name='" + name + '\'' +
                 ", color=" + color +
                 ", image=" + image +

@@ -112,7 +112,6 @@ public class UserManagerImpl implements UserManager {
                 userFromIdToken.setEmail(payload.getEmail());
                 userFromIdToken.setAuthToken(UUID.randomUUID().toString());
                 userFromIdToken.setName((String) payload.get("name"));
-//                userFromIdToken.setName(payload.get);
 
                 User existingUser = userDAO.getUserByEmail(userFromIdToken.getEmail());
                 if (existingUser == null){

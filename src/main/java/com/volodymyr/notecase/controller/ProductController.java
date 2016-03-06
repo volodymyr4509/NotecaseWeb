@@ -21,34 +21,34 @@ public class ProductController {
     ProductManager productManager = new ProductManagerImpl();
 
     @RequestMapping(value = "/get/{id}", method = RequestMethod.GET)
-    public Product getProduct(@PathVariable int id) {
+    public Product getProduct(@PathVariable int id, @RequestHeader(UserController.AUTHENTICATION_TOKEN) String authToken) {
         log.info("Get Product with id = " + id);
-        return productManager.getProduct(id);
+        return productManager.getProduct(id, authToken);
     }
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public boolean addProduct(@RequestBody Product product) {
+    public boolean addProduct(@RequestBody Product product, @RequestHeader(UserController.AUTHENTICATION_TOKEN) String authToken) {
         log.info("Add Product: " + product);
-        return productManager.addProduct(product);
+        return productManager.addProduct(product, authToken);
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.PUT)
-    public boolean updateProduct(@RequestBody Product product) {
+    public boolean updateProduct(@RequestBody Product product, @RequestHeader(UserController.AUTHENTICATION_TOKEN) String authToken) {
         log.info("Update Product with id = " + product.getId() + ", Product: " + product);
-        return productManager.updateProduct(product);
+        return productManager.updateProduct(product, authToken);
     }
 
     @RequestMapping(value = "/delete/{productId}", method = RequestMethod.DELETE)
-    public boolean deleteProduct(@PathVariable int productId) {
-        log.info("Delete Product with id = " + productId);
-        return productManager.deleteProduct(productId);
+    public boolean deleteProduct(@PathVariable int id, @RequestHeader(UserController.AUTHENTICATION_TOKEN) String authToken) {
+        log.info("Delete Product with id = " + id);
+        return productManager.deleteProduct(id, authToken);
     }
 
     @RequestMapping(value = "/getupdated/{timestamp}", method = RequestMethod.GET)
-    public List<Product> getUpdatedProduct(@PathVariable long timestamp) {
+    public List<Product> getUpdatedProduct(@PathVariable long timestamp, @RequestHeader(UserController.AUTHENTICATION_TOKEN) String authToken) {
         Timestamp time = new Timestamp(timestamp);
         log.info("Get updated products from lastUpdateTimestamp = " + time);
-        return productManager.getLastUpdatedProducts(time);
+        return productManager.getLastUpdatedProducts(time, authToken);
     }
 
 }

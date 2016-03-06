@@ -10,14 +10,14 @@ import java.util.List;
  */
 public interface CategoryManager {
 
-    Category getCategory(int categoryId);
+    Category getCategory(int categoryId, String authToken);
 
-    boolean updateCategory(Category category);
+    boolean updateCategory(Category category, String authToken);
 
-    boolean deleteCategory(int categoryId);
+    boolean deleteCategory(int categoryId, String authToken);
 
-    boolean addCategory(Category category);
+    boolean addCategory(Category category, String authToken);
 
-    List<Category> getLastUpdatedCategories(Timestamp timestamp);
+    List<Category> getLastUpdatedCategories(Timestamp timestamp, String authToken);
 
 }

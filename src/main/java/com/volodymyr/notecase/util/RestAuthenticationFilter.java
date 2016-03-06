@@ -14,7 +14,7 @@ import java.io.IOException;
 /**
  * Created by volodymyr on 04.03.16.
  */
-public class RestAuthenticationFilter implements Filter{
+public class RestAuthenticationFilter implements Filter {
     private static Logger log = Logger.getLogger(RestAuthenticationFilter.class.getName());
     private static final String AUTHENTICATION_TOKEN = "AuthToken";
     private static final String URL_FOR_AUTHENTICATION = "/rest/user/authenticate";
@@ -31,17 +31,17 @@ public class RestAuthenticationFilter implements Filter{
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-        if (request.getRequestURI().contains(URL_FOR_AUTHENTICATION) && request.getMethod().equals("POST")){
+        if (request.getRequestURI().contains(URL_FOR_AUTHENTICATION) && request.getMethod().equals("POST")) {
             log.info("Allowed " + URL_FOR_AUTHENTICATION + " url without AuthToken for user authentication (idToken required)");
             chain.doFilter(request, response);
         }
 
         String clientAuthToken = request.getHeader(AUTHENTICATION_TOKEN);
         User existingUser = userManager.getUserByAuthToken(clientAuthToken);
-        if (existingUser == null){
-            log.warn("Cannot authenticate user with authToken: " +clientAuthToken);
+        if (existingUser == null) {
+            log.warn("Cannot authenticate user with authToken: " + clientAuthToken);
             response.setStatus(HttpStatusCodes.STATUS_CODE_UNAUTHORIZED);
-        }else {
+        } else {
             log.debug("User authenticated. Email: " + existingUser.getEmail() + ", Name: " + existingUser.getName());
             chain.doFilter(request, response);
         }

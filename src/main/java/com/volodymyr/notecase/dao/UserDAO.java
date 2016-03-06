@@ -14,6 +14,8 @@ public interface UserDAO {
 
     User getUserByAuthToken(String authToken) throws SQLException;
 
+    User getUserByEmail(String email) throws SQLException;
+
     int addUser(User user) throws SQLException;
 
     int updateUser(User user) throws SQLException;
@@ -24,6 +26,5 @@ public interface UserDAO {
 
     boolean registerIdToken(String idToken);
 
-    User getUserByEmail(String email) throws SQLException;
 
 }

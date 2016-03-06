@@ -20,19 +20,20 @@ public class CategoryDAOImpl implements CategoryDAO {
     private PreparedStatement preparedStmt;
 
     @Override
-    public int addCategory(Category category) throws SQLException {
-        String query = "INSERT INTO Category (Id, Name, Color, Image, LastUpdateTimestamp, Enabled) VALUES (?,?,?,?,?,?);";
+    public int addCategory(Category category, int userId) throws SQLException {
+        String query = "INSERT INTO Category (Id, UserId, Name, Color, Image, LastUpdateTimestamp, Enabled) VALUES (?,?,?,?,?,?,?);";
         int categoryId;
         try {
             connection = ConnectionFactory.getConnection();
             preparedStmt = connection.prepareStatement(query);
             log.info("Database query: " + preparedStmt);
             preparedStmt.setInt(1, category.getId());
-            preparedStmt.setString(2, category.getName());
-            preparedStmt.setInt(3, category.getColor());
-            preparedStmt.setInt(4, category.getImage());
-            preparedStmt.setTimestamp(5, category.getLastUpdateTimestamp());
-            preparedStmt.setBoolean(6, category.isEnabled());
+            preparedStmt.setInt(2, userId);
+            preparedStmt.setString(3, category.getName());
+            preparedStmt.setInt(4, category.getColor());
+            preparedStmt.setInt(5, category.getImage());
+            preparedStmt.setTimestamp(6, category.getLastUpdateTimestamp());
+            preparedStmt.setBoolean(7, category.isEnabled());
             categoryId = preparedStmt.executeUpdate();
         } finally {
             DBUtil.close(preparedStmt);
@@ -42,8 +43,8 @@ public class CategoryDAOImpl implements CategoryDAO {
     }
 
     @Override
-    public Category getCategoryById(int id) throws SQLException {
-        String query = "SELECT * FROM Category WHERE Id = " + id;
+    public Category getCategoryById(int id, int userId) throws SQLException {
+        String query = "SELECT * FROM Category WHERE Id = " + id + " AND UserId = " + userId + " AND Enabled = TRUE;";
         ResultSet rs = null;
         Category category = null;
         try {
@@ -56,6 +57,7 @@ public class CategoryDAOImpl implements CategoryDAO {
                 category = new Category();
                 category.setId(rs.getInt("Id"));
                 category.setCategoryId(rs.getInt("CategoryId"));
+                category.setUserId(rs.getInt("UserId"));
                 category.setName(rs.getString("Name"));
                 category.setColor(rs.getInt("Color"));
                 category.setImage(rs.getInt("Image"));
@@ -71,8 +73,8 @@ public class CategoryDAOImpl implements CategoryDAO {
     }
 
     @Override
-    public void updateCategory(Category category) throws SQLException {
-        String query = "UPDATE Category SET Name = ?, Color = ?, Image = ?, Enabled = ?, LastUpdateTimestamp = NOW() WHERE Id = ?;";
+    public void updateCategory(Category category, int userId) throws SQLException {
+        String query = "UPDATE Category SET Name = ?, Color = ?, Image = ?, Enabled = ?, LastUpdateTimestamp = NOW() WHERE Id = ? AND UserId = ? AND Enabled = TRUE;";
         try {
             connection = ConnectionFactory.getConnection();
             preparedStmt = connection.prepareStatement(query);
@@ -82,6 +84,7 @@ public class CategoryDAOImpl implements CategoryDAO {
             preparedStmt.setInt(3, category.getImage());
             preparedStmt.setBoolean(4, category.isEnabled());
             preparedStmt.setInt(5, category.getId());
+            preparedStmt.setInt(6, category.getUserId());
             log.info("Database query: " + preparedStmt);
 
             preparedStmt.executeUpdate();
@@ -92,14 +95,15 @@ public class CategoryDAOImpl implements CategoryDAO {
     }
 
     @Override
-    public List<Category> getLastUpdatedProducts(Timestamp timestamp) throws SQLException {
-        String query = "SELECT * FROM Category WHERE LastUpdateTimestamp >= ? AND Enabled = true;";
+    public List<Category> getLastUpdatedProducts(Timestamp timestamp, int userId) throws SQLException {
+        String query = "SELECT * FROM Category WHERE UserId = ? AND LastUpdateTimestamp >= ? AND Enabled = TRUE;";
         List<Category> categoryList = null;
         ResultSet rs = null;
         try {
             connection = ConnectionFactory.getConnection();
             preparedStmt = connection.prepareStatement(query);
-            preparedStmt.setTimestamp(1, timestamp);
+            preparedStmt.setInt(1, userId);
+            preparedStmt.setTimestamp(2, timestamp);
             log.info("Database query: " + preparedStmt);
 
             rs = preparedStmt.executeQuery();
@@ -111,6 +115,7 @@ public class CategoryDAOImpl implements CategoryDAO {
                 Category category = new Category();
                 category.setId(rs.getInt("Id"));
                 category.setCategoryId(rs.getInt("CategoryId"));
+                category.setUserId(rs.getInt("UserId"));
                 category.setName(rs.getString("Name"));
                 category.setColor(rs.getInt("Color"));
                 category.setImage(rs.getInt("Image"));

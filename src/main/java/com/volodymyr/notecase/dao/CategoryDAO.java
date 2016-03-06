@@ -11,11 +11,11 @@ import java.util.List;
  */
 public interface CategoryDAO {
 
-    int addCategory(Category category) throws SQLException;
+    int addCategory(Category category, int userId) throws SQLException;
 
-    Category getCategoryById(int id) throws SQLException;
+    Category getCategoryById(int id, int userId) throws SQLException;
 
-    void updateCategory(Category category) throws SQLException;
+    void updateCategory(Category category, int userId) throws SQLException;
 
-    List<Category> getLastUpdatedProducts(Timestamp timestamp) throws SQLException;
+    List<Category> getLastUpdatedProducts(Timestamp timestamp, int userId) throws SQLException;
 }

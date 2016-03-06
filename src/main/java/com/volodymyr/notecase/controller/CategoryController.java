@@ -21,34 +21,34 @@ public class CategoryController {
     private CategoryManager categoryManager = new CategoryManagerImpl();
 
     @RequestMapping(value = "/get/{categoryId}", method = RequestMethod.GET)
-    public Category getCategory(@PathVariable int categoryId) {
+    public Category getCategory(@PathVariable int categoryId, @RequestHeader(UserController.AUTHENTICATION_TOKEN) String authToken) {
         log.info("Get Category with id = " + categoryId);
-        return categoryManager.getCategory(categoryId);
+        return categoryManager.getCategory(categoryId, authToken);
     }
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public boolean addCategory(@RequestBody Category category) {
+    public boolean addCategory(@RequestBody Category category, @RequestHeader(UserController.AUTHENTICATION_TOKEN) String authToken) {
         log.info("Add new Category: " + category);
-        return categoryManager.addCategory(category);
+        return categoryManager.addCategory(category, authToken);
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.PUT)
-    public boolean updateCategory(@RequestBody Category category) {
+    public boolean updateCategory(@RequestBody Category category, @RequestHeader(UserController.AUTHENTICATION_TOKEN) String authToken) {
         log.info("Update Category with id = " + category.getId() + ", Category: " + category);
-        return categoryManager.updateCategory(category);
+        return categoryManager.updateCategory(category, authToken);
     }
 
     @RequestMapping(value = "/delete/{categoryId}")
-    public boolean deleteCategory(@PathVariable int categoryId) {
+    public boolean deleteCategory(@PathVariable int categoryId, @RequestHeader(UserController.AUTHENTICATION_TOKEN) String authToken) {
         log.info("Delete Category with id = " + categoryId);
-        return categoryManager.deleteCategory(categoryId);
+        return categoryManager.deleteCategory(categoryId, authToken);
     }
 
     @RequestMapping(value = "/getupdated/{timestamp}", method = RequestMethod.GET)
-    public @ResponseBody List<Category> getUpdatedCategories(@PathVariable long timestamp) {
+    public List<Category> getUpdatedCategories(@PathVariable long timestamp, @RequestHeader(UserController.AUTHENTICATION_TOKEN) String authToken) {
         Timestamp time = new Timestamp(timestamp);
         log.info("Get updated products from lastUpdateTimestamp = " + time);
-        return categoryManager.getLastUpdatedCategories(time);
+        return categoryManager.getLastUpdatedCategories(time, authToken);
     }
 
 }
