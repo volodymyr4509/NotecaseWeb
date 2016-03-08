@@ -24,34 +24,29 @@ public class UserManagerImpl implements UserManager {
     private UserDAO userDAO = new UserDAOImpl();
 
     @Override
-    public String addUser(User user) {
-        NetHttpTransport transport = new NetHttpTransport();
-        JsonFactory jsonFactory = new JacksonFactory();
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
-                .setAudience(Arrays.asList(SERVER_CLIENT_ID))
-                .setIssuer("https://accounts.google.com")
-                .build();
+    public boolean addUser(String friendEmail, String authToken) {
         try {
-            GoogleIdToken googleIdToken = verifier.verify(user.getIdToken());
-            if (googleIdToken!=null && googleIdToken.getPayload()!=null){
-                GoogleIdToken.Payload payload = googleIdToken.getPayload();
-                User userFromIdToken = new User();
-                userFromIdToken.setEmail(payload.getEmail());
-                userFromIdToken.setAuthToken(UUID.randomUUID().toString());
-                userFromIdToken.setName((String)payload.get("name"));
-//                userFromIdToken.setName(payload.get);
-
-                userDAO.addUser(userFromIdToken);
-                return userFromIdToken.getAuthToken();
-            }else {
-                log.warn("User is not authenticated with current idToken");
+            User deviceOwner = userDAO.getUserByAuthToken(authToken);
+            User friend = userDAO.getUserByEmail(friendEmail);
+            if (deviceOwner == null || friend == null) {
+                return false;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            List<User> friends = userDAO.getUserFriends(deviceOwner.getId());
+            if (friends != null) {
+                for (User u : friends) {
+                    if (u.getId() == friend.getId()) {
+                        return true;
+                    }
+                }
+            }
+
+            userDAO.addUserFriend(deviceOwner.getId(), friend.getId());
+
+        } catch (SQLException e) {
+            log.error("Cannot add Friend with email: " + friendEmail);
+            return false;
         }
-
-
-        return null;
+        return true;
     }
 
     @Override
@@ -85,13 +80,14 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public List<User> getAllTrustedUsers(int userId) {
+    public List<User> getAllTrustedUsers(String authToken) {
         List<User> userList = null;
         try {
-            userList = userDAO.getAllTrustedUsers(userId);
+            User owner = userDAO.getUserByAuthToken(authToken);
+            userList = userDAO.getUserFriends(owner.getId());
             log.info("User list retrieved frm database");
         } catch (Exception e) {
-            log.error("Cannot retrieve user list by userId: " + userId, e);
+            log.error("Cannot retrieve user list by userId: " + authToken, e);
         }
         return userList;
     }
@@ -114,9 +110,9 @@ public class UserManagerImpl implements UserManager {
                 userFromIdToken.setName((String) payload.get("name"));
 
                 User existingUser = userDAO.getUserByEmail(userFromIdToken.getEmail());
-                if (existingUser == null){
+                if (existingUser == null) {
                     userDAO.addUser(userFromIdToken);
-                }else {
+                } else {
                     userFromIdToken.setId(existingUser.getId());
                     userDAO.updateUser(userFromIdToken);
                 }
@@ -134,7 +130,7 @@ public class UserManagerImpl implements UserManager {
     public User getUserByAuthToken(String authToken) {
         try {
             return userDAO.getUserByAuthToken(authToken);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("Cannot get user by authToken: " + authToken, e);
         }
         return null;

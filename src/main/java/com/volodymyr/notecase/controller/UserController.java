@@ -26,10 +26,16 @@ public class UserController {
 //        return userManager.getUser(userId);
 //    }
 
+    /**
+     * for user's friends only
+     */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public String addUser(@RequestBody User user) {
+    public boolean addUser(@RequestBody User user, @RequestHeader(UserController.AUTHENTICATION_TOKEN) String authToken) {
         log.info("Add new User: " + user);
-        return userManager.addUser(user);
+        if (user == null){
+            return false;
+        }
+        return userManager.addUser(user.getEmail(), authToken);
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.PUT)
@@ -44,10 +50,10 @@ public class UserController {
         return userManager.deleteUser(userId);
     }
 
-    @RequestMapping(value = "/getall/{userId}", method = RequestMethod.GET)
-    public List<User> getAllTrustedUsers(@PathVariable int userId) {
-        log.info("Get all trusted users for user with id: " + userId);
-        return userManager.getAllTrustedUsers(userId);
+    @RequestMapping(value = "/getall", method = RequestMethod.GET)
+    public List<User> getAllTrustedUsers(@RequestHeader(UserController.AUTHENTICATION_TOKEN) String authToken) {
+        log.info("Get all trusted users for user");
+        return userManager.getAllTrustedUsers(authToken);
     }
 
     @RequestMapping(value = "/authenticate",method = RequestMethod.POST)

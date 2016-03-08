@@ -128,7 +128,6 @@ public class UserDAOImpl implements UserDAO {
         }
     }
 
-    @Override
     public boolean deleteUser(int userId) throws SQLException {
         User user = getUserById(userId);
         int affectedRows = 0;
@@ -141,7 +140,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public List<User> getAllTrustedUsers(int userId) throws SQLException {
+    public List<User> getUserFriends(int userId) throws SQLException {
         String query = "SELECT * FROM User u JOIN UserFriends uf ON u.Id = uf.FriendId WHERE uf.UserId = ?;";
         List<User> users = null;
         ResultSet rs = null;
@@ -160,7 +159,7 @@ public class UserDAOImpl implements UserDAO {
 
                 User user = new User();
                 user.setId(rs.getInt("Id"));
-                user.setName(rs.getString("UserName"));
+                user.setName(rs.getString("Name"));
                 user.setEmail(rs.getString("Email"));
                 user.setLastUpdateTimestamp(rs.getTimestamp("LastUpdateTimestamp"));
                 user.setEnabled(rs.getBoolean("Enabled"));
@@ -176,8 +175,39 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public boolean registerIdToken(String idToken) {
-        return false;
+    public List<User> getUserConstituents(int userId) throws SQLException {
+        String query = "SELECT * FROM User u JOIN UserFriends uf ON u.Id = uf.UserId WHERE uf.FriendId = ?;";
+
+        List<User> users = null;
+        ResultSet rs = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStmt = connection.prepareStatement(query);
+            preparedStmt.setInt(1, userId);
+
+            log.info("Database query: " + preparedStmt);
+
+            rs = preparedStmt.executeQuery();
+            while (rs.next()) {
+                if (users == null) {
+                    users = new ArrayList<>();
+                }
+
+                User user = new User();
+                user.setId(rs.getInt("Id"));
+                user.setName(rs.getString("Name"));
+                user.setEmail(rs.getString("Email"));
+                user.setLastUpdateTimestamp(rs.getTimestamp("LastUpdateTimestamp"));
+                user.setEnabled(rs.getBoolean("Enabled"));
+
+                users.add(user);
+            }
+        } finally {
+            DBUtil.close(connection);
+            DBUtil.close(stmt);
+            DBUtil.close(rs);
+        }
+        return users;
     }
 
     @Override
@@ -206,6 +236,25 @@ public class UserDAOImpl implements UserDAO {
             DBUtil.close(connection);
         }
         return user;
+    }
+
+    @Override
+    public boolean addUserFriend(int userId, int friendId) throws SQLException {
+        String query = "INSERT INTO UserFriends (UserId, FriendId) VALUES (?,?);";
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStmt = connection.prepareStatement(query);
+            log.info("Database query: " + preparedStmt);
+
+            preparedStmt.setInt(1, userId);
+            preparedStmt.setInt(2, friendId);
+
+            preparedStmt.executeUpdate();
+            return true;
+        } finally {
+            DBUtil.close(preparedStmt);
+            DBUtil.close(connection);
+        }
     }
 }
 

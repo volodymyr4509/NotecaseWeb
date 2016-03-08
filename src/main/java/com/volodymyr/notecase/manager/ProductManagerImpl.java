@@ -8,6 +8,9 @@ import com.volodymyr.notecase.entity.Product;
 import com.volodymyr.notecase.entity.User;
 import org.apache.log4j.Logger;
 
+import javax.security.sasl.AuthenticationException;
+import javax.swing.*;
+import java.io.FileOutputStream;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -68,6 +71,9 @@ public class ProductManagerImpl implements ProductManager {
         return success;
     }
 
+    /**
+     * return true even if duplicate exists
+     */
     @Override
     public boolean addProduct(Product product, String authToken) {
         boolean success = true;
@@ -78,9 +84,6 @@ public class ProductManagerImpl implements ProductManager {
             if (duplicate == null && user != null){
                 productDAO.addProduct(product, user.getId());
                 log.info("Product added: " + product);
-            }else {
-                log.info("Product wasnt added. Duplicate product with id = " + product.getId() + " found: " + product);
-                return false;
             }
         }catch (Exception e){
             log.error("Cannot add Product: " + product, e);
@@ -95,10 +98,10 @@ public class ProductManagerImpl implements ProductManager {
         try {
             User user = userDAO.getUserByAuthToken(authToken);
             if (user == null){
-                return productList;
+                return null;
             }
-            productList = productDAO.getLastUpdatedProducts(timestamp, user.getId());
-            log.info("Products List retrieved from database, count = " + productList.size() + ", lastUpdateTimestamp = " + timestamp);
+            productList = productDAO.getLastUpdatedProducts(timestamp, user.getId(), userDAO.getUserConstituents(user.getId()));
+            log.info("Products List retrieved from database, lastUpdateTimestamp = " + timestamp);
         }catch (Exception e){
             log.error("Cannot retrieve last updated products since: " + timestamp, e);
         }

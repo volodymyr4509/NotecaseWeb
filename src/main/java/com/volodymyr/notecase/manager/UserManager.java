@@ -9,13 +9,13 @@ import java.util.List;
  */
 public interface UserManager {
 
-    String addUser(User user);
+    boolean addUser(String friendEmail, String authToken);
 
     boolean updateUser(User user);
 
     boolean deleteUser(int userId);
 
-    List<User> getAllTrustedUsers(int userId);
+    List<User> getAllTrustedUsers(String authToken);
 
     String authenticateUser(String idToken);
 

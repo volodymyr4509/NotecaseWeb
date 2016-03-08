@@ -19,12 +19,20 @@ public interface UserDAO {
     int addUser(User user) throws SQLException;
 
     int updateUser(User user) throws SQLException;
-    
-    boolean deleteUser(int userId) throws SQLException;
 
-    List<User> getAllTrustedUsers(int userId) throws SQLException;
+    /**
+     * all users you trust and send them your data.
+     * It is possible to send one directional invitation to allow parent/child relationship.
+     * You can force someone to send invitation to you and receive all his data.
+     * Because your children dont need to know when you buy condoms:) But you need.
+     */
+    List<User> getUserFriends(int userId) throws SQLException;
 
-    boolean registerIdToken(String idToken);
+    /**
+     * All users who trust you and send you their data
+     */
+    List<User> getUserConstituents(int userId) throws SQLException;
 
+    boolean addUserFriend(int userId, int friendId) throws SQLException;
 
 }

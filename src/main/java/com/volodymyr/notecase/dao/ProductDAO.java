@@ -1,7 +1,9 @@
 package com.volodymyr.notecase.dao;
 
 import com.volodymyr.notecase.entity.Product;
+import com.volodymyr.notecase.entity.User;
 
+import javax.jws.soap.SOAPBinding;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
@@ -18,5 +20,5 @@ public interface ProductDAO {
 
     void deleteProduct(int id, int userId) throws SQLException;
 
-    List<Product> getLastUpdatedProducts(Timestamp timestamp, int userId) throws SQLException;
+    List<Product> getLastUpdatedProducts(Timestamp timestamp, int userId, List<User> friends) throws SQLException;
 }

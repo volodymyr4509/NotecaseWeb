@@ -1,6 +1,7 @@
 package com.volodymyr.notecase.dao;
 
 import com.volodymyr.notecase.entity.Product;
+import com.volodymyr.notecase.entity.User;
 import com.volodymyr.notecase.util.ConnectionFactory;
 import com.volodymyr.notecase.util.DBUtil;
 import org.apache.log4j.Logger;
@@ -107,8 +108,15 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public List<Product> getLastUpdatedProducts(Timestamp timestamp, int userId) throws SQLException {
-        String query = "SELECT * FROM Product WHERE UserId = " + userId + " LastUpdateTimestamp >= ? AND Enabled = TRUE;";
+    public List<Product> getLastUpdatedProducts(Timestamp timestamp, int userId, List<User> constituents) throws SQLException {
+        String ids = String.valueOf(userId);
+        if (constituents!=null){
+            for (User f: constituents){
+                ids += "," + f.getId();
+            }
+        }
+
+        String query = "SELECT * FROM Product WHERE UserId IN( " + ids + ") AND LastUpdateTimestamp >= ? AND Enabled = TRUE;";
         List<Product> productList = null;
         ResultSet rs = null;
         try {
