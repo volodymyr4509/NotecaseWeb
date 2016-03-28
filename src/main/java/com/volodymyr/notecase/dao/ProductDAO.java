@@ -14,11 +14,11 @@ import java.util.List;
 public interface ProductDAO {
     int addProduct(Product product, int userId) throws SQLException;
 
-    Product getProductById(int id, int userId) throws SQLException;
+    Product getProductById(String id, int userId) throws SQLException;
 
     void updateProduct(Product product, int userId) throws SQLException;
 
-    void deleteProduct(int id, int userId) throws SQLException;
+    void deleteProduct(String id, int userId) throws SQLException;
 
     List<Product> getLastUpdatedProducts(Timestamp timestamp, int userId, List<User> friends) throws SQLException;
 }

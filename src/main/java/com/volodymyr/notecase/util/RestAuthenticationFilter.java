@@ -34,6 +34,7 @@ public class RestAuthenticationFilter implements Filter {
         if (request.getRequestURI().contains(URL_FOR_AUTHENTICATION) && request.getMethod().equals("POST")) {
             log.info("Allowed " + URL_FOR_AUTHENTICATION + " url without AuthToken for user authentication (idToken required)");
             chain.doFilter(request, response);
+            return;
         }
 
         String clientAuthToken = request.getHeader(AUTHENTICATION_TOKEN);

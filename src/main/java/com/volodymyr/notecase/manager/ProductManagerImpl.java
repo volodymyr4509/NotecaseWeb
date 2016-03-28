@@ -8,9 +8,6 @@ import com.volodymyr.notecase.entity.Product;
 import com.volodymyr.notecase.entity.User;
 import org.apache.log4j.Logger;
 
-import javax.security.sasl.AuthenticationException;
-import javax.swing.*;
-import java.io.FileOutputStream;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -23,7 +20,7 @@ public class ProductManagerImpl implements ProductManager {
     private ProductDAO productDAO = new ProductDAOImpl();
     private UserDAO userDAO = new UserDAOImpl();
 
-    public Product getProduct(int id, String authToken){
+    public Product getProduct(String id, String authToken){
         Product product = null;
         try {
             User user = userDAO.getUserByAuthToken(authToken);
@@ -55,7 +52,7 @@ public class ProductManagerImpl implements ProductManager {
     }
 
     @Override
-    public boolean deleteProduct(int id, String authToken) {
+    public boolean deleteProduct(String id, String authToken) {
         boolean success = true;
         try {
             User user = userDAO.getUserByAuthToken(authToken);
@@ -80,7 +77,7 @@ public class ProductManagerImpl implements ProductManager {
 
         try {
             User user = userDAO.getUserByAuthToken(authToken);
-            Product duplicate = getProduct(product.getId(), authToken);
+            Product duplicate = getProduct(product.getUuid(), authToken);
             if (duplicate == null && user != null){
                 productDAO.addProduct(product, user.getId());
                 log.info("Product added: " + product);

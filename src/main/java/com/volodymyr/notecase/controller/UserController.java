@@ -1,5 +1,8 @@
 package com.volodymyr.notecase.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.xml.internal.ws.server.ServerRtException;
 import com.volodymyr.notecase.entity.User;
 import com.volodymyr.notecase.manager.UserManager;
 import com.volodymyr.notecase.manager.UserManagerImpl;
@@ -57,7 +60,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/authenticate",method = RequestMethod.POST)
-    public String authenticateUser(@RequestBody String idToken){
+    public User authenticateUser(@RequestBody String idToken){
         log.info("AuthenticateUser post request");
         return userManager.authenticateUser(idToken);
     }

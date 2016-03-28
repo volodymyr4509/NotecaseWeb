@@ -1,6 +1,8 @@
 package com.volodymyr.notecase.dao;
 
 import com.volodymyr.notecase.entity.Category;
+import com.volodymyr.notecase.entity.Product;
+import com.volodymyr.notecase.entity.User;
 import com.volodymyr.notecase.util.ConnectionFactory;
 import com.volodymyr.notecase.util.DBUtil;
 import org.apache.log4j.Logger;
@@ -95,15 +97,21 @@ public class CategoryDAOImpl implements CategoryDAO {
     }
 
     @Override
-    public List<Category> getLastUpdatedProducts(Timestamp timestamp, int userId) throws SQLException {
-        String query = "SELECT * FROM Category WHERE UserId = ? AND LastUpdateTimestamp >= ? AND Enabled = TRUE;";
+    public List<Category> getLastUpdatedCategories(Timestamp timestamp, int userId, List<User> userConstituents) throws SQLException {
+        String ids = String.valueOf(userId);
+        if (connection!=null){
+            for (User cons: userConstituents){
+                ids += "," + cons.getId();
+            }
+        }
+
+        String query = "SELECT * FROM Category WHERE UserId IN (" + ids + ") AND LastUpdateTimestamp >= ? AND Enabled = TRUE;";
         List<Category> categoryList = null;
         ResultSet rs = null;
         try {
             connection = ConnectionFactory.getConnection();
             preparedStmt = connection.prepareStatement(query);
-            preparedStmt.setInt(1, userId);
-            preparedStmt.setTimestamp(2, timestamp);
+            preparedStmt.setTimestamp(1, timestamp);
             log.info("Database query: " + preparedStmt);
 
             rs = preparedStmt.executeQuery();
@@ -130,5 +138,6 @@ public class CategoryDAOImpl implements CategoryDAO {
         }
         return categoryList;
     }
+
 }
 

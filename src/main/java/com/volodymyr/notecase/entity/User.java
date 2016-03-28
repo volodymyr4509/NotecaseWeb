@@ -6,6 +6,7 @@ import java.sql.Timestamp;
  * Created by volodymyr on 03.01.16.
  */
 public class User {
+
     private int id;
     private String name;
     private String idToken;

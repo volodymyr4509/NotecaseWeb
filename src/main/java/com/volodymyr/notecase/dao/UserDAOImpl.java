@@ -54,7 +54,7 @@ public class UserDAOImpl implements UserDAO {
         try {
             connection = ConnectionFactory.getConnection();
             stmt = connection.createStatement();
-            log.info("Database query: " + stmt);
+            log.info("Database query: " + query);
 
             rs = stmt.executeQuery(query);
             if (rs.next()) {
@@ -62,7 +62,7 @@ public class UserDAOImpl implements UserDAO {
                 user.setId(rs.getInt("Id"));
                 user.setName(rs.getString("Name"));
                 user.setEmail(rs.getString("Email"));
-                user.setEmail(rs.getString("AuthToken"));
+                user.setAuthToken(rs.getString("AuthToken"));
                 user.setLastUpdateTimestamp(rs.getTimestamp("LastUpdateTimestamp"));
                 user.setEnabled(rs.getBoolean("Enabled"));
             }

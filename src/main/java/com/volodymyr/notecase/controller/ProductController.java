@@ -21,7 +21,7 @@ public class ProductController {
     ProductManager productManager = new ProductManagerImpl();
 
     @RequestMapping(value = "/get/{id}", method = RequestMethod.GET)
-    public Product getProduct(@PathVariable int id, @RequestHeader(UserController.AUTHENTICATION_TOKEN) String authToken) {
+    public Product getProduct(@PathVariable String id, @RequestHeader(UserController.AUTHENTICATION_TOKEN) String authToken) {
         log.info("Get Product with id = " + id);
         return productManager.getProduct(id, authToken);
     }
@@ -34,12 +34,12 @@ public class ProductController {
 
     @RequestMapping(value = "/update", method = RequestMethod.PUT)
     public boolean updateProduct(@RequestBody Product product, @RequestHeader(UserController.AUTHENTICATION_TOKEN) String authToken) {
-        log.info("Update Product with id = " + product.getId() + ", Product: " + product);
+        log.info("Update Product with id = " + product.getUuid() + ", Product: " + product);
         return productManager.updateProduct(product, authToken);
     }
 
-    @RequestMapping(value = "/delete/{productId}", method = RequestMethod.DELETE)
-    public boolean deleteProduct(@PathVariable int id, @RequestHeader(UserController.AUTHENTICATION_TOKEN) String authToken) {
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
+    public boolean deleteProduct(@PathVariable String id, @RequestHeader(UserController.AUTHENTICATION_TOKEN) String authToken) {
         log.info("Delete Product with id = " + id);
         return productManager.deleteProduct(id, authToken);
     }

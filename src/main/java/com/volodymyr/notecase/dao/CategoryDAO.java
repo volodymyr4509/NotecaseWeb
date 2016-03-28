@@ -1,6 +1,7 @@
 package com.volodymyr.notecase.dao;
 
 import com.volodymyr.notecase.entity.Category;
+import com.volodymyr.notecase.entity.User;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -17,5 +18,5 @@ public interface CategoryDAO {
 
     void updateCategory(Category category, int userId) throws SQLException;
 
-    List<Category> getLastUpdatedProducts(Timestamp timestamp, int userId) throws SQLException;
+    List<Category> getLastUpdatedCategories(Timestamp timestamp, int userId, List<User> userConstituents) throws SQLException;
 }

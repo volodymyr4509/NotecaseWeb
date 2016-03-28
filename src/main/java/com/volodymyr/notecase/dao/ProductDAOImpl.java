@@ -20,8 +20,8 @@ public class ProductDAOImpl implements ProductDAO {
     private Statement stmt;
     private PreparedStatement preparedStmt;
 
-    public Product getProductById(int id, int userId) throws SQLException {
-        String query = "SELECT * FROM Product WHERE Id = " + id + " AND UserId = " + userId + " AND Enabled = true;";
+    public Product getProductById(String uuid, int userId) throws SQLException {
+        String query = "SELECT * FROM Product WHERE Uuid = '" + uuid + "' AND UserId = " + userId + " AND Enabled = true;";
         ResultSet rs = null;
         Product product = null;
         try {
@@ -33,7 +33,7 @@ public class ProductDAOImpl implements ProductDAO {
             if (rs.next()) {
                 product = new Product();
                 product.setProductId(rs.getInt("ProductId"));
-                product.setId(rs.getInt("Id"));
+                product.setUuid(rs.getString("uuid"));
                 product.setUserId(rs.getInt("UserId"));
                 product.setCategoryId(rs.getInt("CategoryId"));
                 product.setName(rs.getString("Name"));
@@ -53,7 +53,7 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public int addProduct(Product product, int userId) throws SQLException {
-        String query = "INSERT INTO Product (Id, UserId, CategoryId, Name, Price, Created, Enabled) VALUES (?,?,?,?,?,?,?);";
+        String query = "INSERT INTO Product (Uuid, UserId, CategoryId, Name, Price, Created, Enabled) VALUES (?,?,?,?,?,?,?);";
         int productId;
 
         try {
@@ -61,7 +61,7 @@ public class ProductDAOImpl implements ProductDAO {
             preparedStmt = connection.prepareStatement(query);
             log.info("Database query: " + preparedStmt);
 
-            preparedStmt.setInt(1, product.getId());
+            preparedStmt.setString(1, product.getUuid());
             preparedStmt.setInt(2, userId);
             preparedStmt.setInt(3, product.getCategoryId());
             preparedStmt.setString(4, product.getName());
@@ -78,7 +78,7 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public void updateProduct(Product product, int userId) throws SQLException {
-        String query = "UPDATE Product SET CategoryId = ?, Name = ?, Price = ?, Enabled = ?, LastUpdateTimestamp = NOW() WHERE Id = ? AND  UserId = ? AND Enabled = TRUE;";
+        String query = "UPDATE Product SET CategoryId = ?, Name = ?, Price = ?, Enabled = ?, LastUpdateTimestamp = NOW() WHERE Uuid = ? AND  UserId = ? AND Enabled = TRUE;";
         try {
             connection = ConnectionFactory.getConnection();
             preparedStmt = connection.prepareStatement(query);
@@ -87,7 +87,7 @@ public class ProductDAOImpl implements ProductDAO {
             preparedStmt.setString(2, product.getName());
             preparedStmt.setDouble(3, product.getPrice());
             preparedStmt.setBoolean(4, product.isEnabled());
-            preparedStmt.setInt(5, product.getId());
+            preparedStmt.setString(5, product.getUuid());
             preparedStmt.setInt(6, userId);
             log.info("Database query: " + preparedStmt);
 
@@ -99,8 +99,8 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public void deleteProduct(int id, int userId) throws SQLException {
-        Product product = getProductById(id, userId);
+    public void deleteProduct(String uuid, int userId) throws SQLException {
+        Product product = getProductById(uuid, userId);
         if (product != null) {
             product.setEnabled(false);
             updateProduct(product, userId);
@@ -132,7 +132,7 @@ public class ProductDAOImpl implements ProductDAO {
                     productList = new ArrayList<>();
                 }
                 Product product = new Product();
-                product.setId(rs.getInt("Id"));
+                product.setUuid(rs.getString("Uuid"));
                 product.setUserId(rs.getInt("UserId"));
                 product.setCategoryId(rs.getInt("CategoryId"));
                 product.setName(rs.getString("Name"));

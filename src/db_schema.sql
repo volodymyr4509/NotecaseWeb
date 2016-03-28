@@ -1,7 +1,7 @@
 CREATE TABLE Product
 (
   ProductId           INT(11)      NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  Id                  INT(11)      NOT NULL,
+  Uuid                VARCHAR(256) NOT NULL,
   UserId              INT(11)      NOT NULL,
   CategoryId          INT(11)      NOT NULL,
   Name                VARCHAR(256) NOT NULL,
@@ -35,6 +35,8 @@ CREATE TABLE User
   Enabled             TINYINT      NOT NULL DEFAULT '1'
 )
   DEFAULT CHARSET = utf8;
+
+INSERT INTO User (Name,Email,AuthToken)VALUES ('DUMMY', 'DUMMY', 'DUMMY');
 
 CREATE TABLE UserFriends
 (

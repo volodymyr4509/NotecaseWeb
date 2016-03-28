@@ -11,6 +11,7 @@ import com.volodymyr.notecase.entity.User;
 import org.apache.log4j.Logger;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -39,7 +40,6 @@ public class UserManagerImpl implements UserManager {
                     }
                 }
             }
-
             userDAO.addUserFriend(deviceOwner.getId(), friend.getId());
 
         } catch (SQLException e) {
@@ -91,9 +91,8 @@ public class UserManagerImpl implements UserManager {
         }
         return userList;
     }
-
     @Override
-    public String authenticateUser(String idToken) {
+    public User authenticateUser(String idToken) {
         NetHttpTransport transport = new NetHttpTransport();
         JsonFactory jsonFactory = new JacksonFactory();
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
@@ -111,12 +110,16 @@ public class UserManagerImpl implements UserManager {
 
                 User existingUser = userDAO.getUserByEmail(userFromIdToken.getEmail());
                 if (existingUser == null) {
-                    userDAO.addUser(userFromIdToken);
+                    int id = userDAO.addUser(userFromIdToken);
+                    userFromIdToken.setId(id);
                 } else {
+                    userFromIdToken.setAuthToken(existingUser.getAuthToken());
                     userFromIdToken.setId(existingUser.getId());
+                    userFromIdToken.setLastUpdateTimestamp(new Timestamp(System.currentTimeMillis()));
+                    userFromIdToken.setEnabled(true);
                     userDAO.updateUser(userFromIdToken);
                 }
-                return userFromIdToken.getAuthToken();
+                return userFromIdToken;
             } else {
                 log.warn("User is not authenticated with current idToken");
             }
@@ -125,6 +128,7 @@ public class UserManagerImpl implements UserManager {
         }
         return null;
     }
+
 
     @Override
     public User getUserByAuthToken(String authToken) {

@@ -10,7 +10,7 @@ import java.sql.Timestamp;
  */
 
 public class Product {
-    private int id;
+    private String uuid;
     private int productId;
     private int userId;
     private int categoryId;
@@ -22,12 +22,12 @@ public class Product {
     private Timestamp lastUpdateTimestamp;
     private boolean enabled = true;
 
-    public int getId() {
-        return id;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public int getProductId() {
@@ -97,7 +97,7 @@ public class Product {
     @Override
     public String toString() {
         return "Product{" +
-                "id=" + id +
+                "uuid=" + uuid +
                 ", userId=" + userId +
                 ", categoryId=" + categoryId +
                 ", name='" + name + '\'' +

@@ -25,12 +25,12 @@ public class CategoryManagerImpl implements CategoryManager {
         Category category = null;
         try {
             User user = userDAO.getUserByAuthToken(authToken);
-            if (user == null){
+            if (user == null) {
                 return null;
             }
             category = categoryDAO.getCategoryById(categoryId, user.getId());
             log.info("Retrieved Category by id = " + categoryId + ", Category: " + category);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("Cannot retrieve category with id = " + categoryId, e);
         }
         return category;
@@ -41,12 +41,12 @@ public class CategoryManagerImpl implements CategoryManager {
         boolean success = true;
         try {
             User user = userDAO.getUserByAuthToken(authToken);
-            if (user == null){
+            if (user == null) {
                 return false;
             }
             categoryDAO.updateCategory(category, user.getId());
             log.info("Updated Category: " + category);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("Cannot update Category: " + category);
             success = false;
         }
@@ -59,13 +59,13 @@ public class CategoryManagerImpl implements CategoryManager {
         try {
             User user = userDAO.getUserByAuthToken(authToken);
             Category category = getCategory(id, authToken);
-            if (category != null && user != null){
+            if (category != null && user != null) {
                 category.setEnabled(false);
                 categoryDAO.updateCategory(category, user.getId());
                 log.info("Category deleted successfully.");
                 success = true;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("Cannot delete category", e);
             success = false;
         }
@@ -76,18 +76,18 @@ public class CategoryManagerImpl implements CategoryManager {
     public boolean addCategory(Category category, String authToken) {
         boolean success = true;
         Category duplicate = getCategory(category.getId(), authToken);
-        if (duplicate != null){
+        if (duplicate != null) {
             log.info("Category not added. Duplicate Categoory with id = " + category.getId() + " found: " + category);
-            return false;
+            return updateCategory(category, authToken);
         }
         try {
             User user = userDAO.getUserByAuthToken(authToken);
-            if (user == null){
+            if (user == null) {
                 return false;
             }
             categoryDAO.addCategory(category, user.getId());
             log.info("Category added: " + category);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("Cannot add Category: " + category, e);
             success = false;
         }
@@ -99,12 +99,12 @@ public class CategoryManagerImpl implements CategoryManager {
         List<Category> categoryList = null;
         try {
             User user = userDAO.getUserByAuthToken(authToken);
-            if (user == null){
+            if (user == null) {
                 return null;
             }
-            categoryList = categoryDAO.getLastUpdatedProducts(timestamp, user.getId());
+            categoryList = categoryDAO.getLastUpdatedCategories(timestamp, user.getId(), userDAO.getUserConstituents(user.getId()));
             log.info("Categories List retrieved from database, lastUpdateTimestamp = " + timestamp);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("Cannot retrieve last updated categories since: " + timestamp, e);
         }
         return categoryList;

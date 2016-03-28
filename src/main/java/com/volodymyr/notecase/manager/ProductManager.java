@@ -10,11 +10,11 @@ import java.util.List;
  */
 public interface ProductManager {
 
-    Product getProduct(int id, String authToken);
+    Product getProduct(String id, String authToken);
 
     boolean updateProduct(Product product, String authToken);
 
-    boolean deleteProduct(int id, String authToken);
+    boolean deleteProduct(String id, String authToken);
 
     boolean addProduct(Product product, String authToken);
 
