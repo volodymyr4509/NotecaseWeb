@@ -21,7 +21,7 @@ import java.util.UUID;
  */
 public class UserManagerImpl implements UserManager {
     private static Logger log = Logger.getLogger(UserManagerImpl.class.getName());
-    private static final String SERVER_CLIENT_ID = "1062930196155-uno4j21qb2akk7eojrueek4f0evb89m5.apps.googleusercontent.com";
+    private static final String SERVER_CLIENT_ID = "********";
     private UserDAO userDAO = new UserDAOImpl();
 
     @Override
