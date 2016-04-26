@@ -7,6 +7,8 @@ import com.volodymyr.notecase.dao.UserDAOImpl;
 import com.volodymyr.notecase.entity.Category;
 import com.volodymyr.notecase.entity.User;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -14,11 +16,13 @@ import java.util.List;
 /**
  * Created by volodymyr on 10.01.16.
  */
+@Service
 public class CategoryManagerImpl implements CategoryManager {
     private static Logger log = Logger.getLogger(CategoryManagerImpl.class.getName());
 
     private CategoryDAO categoryDAO = new CategoryDAOImpl();
-    private UserDAO userDAO = new UserDAOImpl();
+    @Autowired
+    private UserDAO userDAO;
 
     @Override
     public Category getCategory(int categoryId, String authToken) {

@@ -6,6 +6,7 @@ import com.volodymyr.notecase.entity.User;
 import com.volodymyr.notecase.util.ConnectionFactory;
 import com.volodymyr.notecase.util.DBUtil;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -17,6 +18,8 @@ import java.util.List;
 public class CategoryDAOImpl implements CategoryDAO {
     private static Logger log = Logger.getLogger(CategoryDAOImpl.class.getName());
 
+    @Autowired
+    private ConnectionFactory connectionFactory;
     private Connection connection;
     private Statement stmt;
     private PreparedStatement preparedStmt;
@@ -26,7 +29,7 @@ public class CategoryDAOImpl implements CategoryDAO {
         String query = "INSERT INTO Category (Id, UserId, Name, Color, Image, LastUpdateTimestamp, Enabled) VALUES (?,?,?,?,?,?,?);";
         int categoryId;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.createConnection();
             preparedStmt = connection.prepareStatement(query);
             log.info("Database query: " + preparedStmt);
             preparedStmt.setInt(1, category.getId());
@@ -50,7 +53,7 @@ public class CategoryDAOImpl implements CategoryDAO {
         ResultSet rs = null;
         Category category = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.createConnection();
             stmt = connection.createStatement();
             log.info("Database query: " + stmt);
 
@@ -78,7 +81,7 @@ public class CategoryDAOImpl implements CategoryDAO {
     public void updateCategory(Category category, int userId) throws SQLException {
         String query = "UPDATE Category SET Name = ?, Color = ?, Image = ?, Enabled = ?, LastUpdateTimestamp = NOW() WHERE Id = ? AND UserId = ? AND Enabled = TRUE;";
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.createConnection();
             preparedStmt = connection.prepareStatement(query);
 
             preparedStmt.setString(1, category.getName());
@@ -109,7 +112,7 @@ public class CategoryDAOImpl implements CategoryDAO {
         List<Category> categoryList = null;
         ResultSet rs = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.createConnection();
             preparedStmt = connection.prepareStatement(query);
             preparedStmt.setTimestamp(1, timestamp);
             log.info("Database query: " + preparedStmt);

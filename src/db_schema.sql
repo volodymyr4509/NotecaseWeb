@@ -6,8 +6,8 @@ CREATE TABLE Product
   CategoryId          INT(11)      NOT NULL,
   Name                VARCHAR(256) NOT NULL,
   Price               DOUBLE       NOT NULL,
-  Created             TIMESTAMP    NOT NULL,
   LastUpdateTimestamp TIMESTAMP    NOT NULL DEFAULT NOW(),
+  Created             TIMESTAMP    NOT NULL,
   Enabled             TINYINT      NOT NULL DEFAULT '1'
 )
   DEFAULT CHARSET = utf8;

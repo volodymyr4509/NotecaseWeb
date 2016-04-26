@@ -5,6 +5,8 @@ import com.volodymyr.notecase.entity.User;
 import com.volodymyr.notecase.manager.UserManager;
 import com.volodymyr.notecase.manager.UserManagerImpl;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -14,12 +16,14 @@ import java.io.IOException;
 /**
  * Created by volodymyr on 04.03.16.
  */
+@Service
 public class RestAuthenticationFilter implements Filter {
     private static Logger log = Logger.getLogger(RestAuthenticationFilter.class.getName());
     private static final String AUTHENTICATION_TOKEN = "AuthToken";
     private static final String URL_FOR_AUTHENTICATION = "/rest/user/authenticate";
 
-    private UserManager userManager = new UserManagerImpl();
+    @Autowired
+    private UserManager userManager;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

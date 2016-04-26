@@ -6,9 +6,11 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.volodymyr.notecase.dao.UserDAO;
-import com.volodymyr.notecase.dao.UserDAOImpl;
 import com.volodymyr.notecase.entity.User;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -16,13 +18,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Created by volodymyr on 19.02.16.
- */
+@Service
 public class UserManagerImpl implements UserManager {
     private static Logger log = Logger.getLogger(UserManagerImpl.class.getName());
-    private static final String SERVER_CLIENT_ID = "********";
-    private UserDAO userDAO = new UserDAOImpl();
+
+    @Value("${server_client_id}")
+    private String secret;
+    @Autowired
+    private UserDAO userDAO;
 
     @Override
     public boolean addUser(String friendEmail, String authToken) {
@@ -85,18 +88,19 @@ public class UserManagerImpl implements UserManager {
         try {
             User owner = userDAO.getUserByAuthToken(authToken);
             userList = userDAO.getUserFriends(owner.getId());
-            log.info("User list retrieved frm database");
+            log.info("User list retrieved from database");
         } catch (Exception e) {
             log.error("Cannot retrieve user list by userId: " + authToken, e);
         }
         return userList;
     }
+
     @Override
     public User authenticateUser(String idToken) {
         NetHttpTransport transport = new NetHttpTransport();
         JsonFactory jsonFactory = new JacksonFactory();
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
-                .setAudience(Arrays.asList(SERVER_CLIENT_ID))
+                .setAudience(Arrays.asList(secret))
                 .setIssuer("https://accounts.google.com")
                 .build();
         try {
@@ -139,5 +143,6 @@ public class UserManagerImpl implements UserManager {
         }
         return null;
     }
+
 }
 

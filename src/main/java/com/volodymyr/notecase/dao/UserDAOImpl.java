@@ -3,6 +3,8 @@ package com.volodymyr.notecase.dao;
 import com.volodymyr.notecase.entity.User;
 import com.volodymyr.notecase.util.ConnectionFactory;
 import com.volodymyr.notecase.util.DBUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,9 +14,12 @@ import java.util.logging.Logger;
 /**
  * Created by volodymyr on 19.02.16.
  */
+@Service
 public class UserDAOImpl implements UserDAO {
     private static Logger log = Logger.getLogger(UserDAOImpl.class.getName());
 
+    @Autowired
+    private ConnectionFactory connectionFactory;
     private Connection connection;
     private Statement stmt;
     private PreparedStatement preparedStmt;
@@ -24,7 +29,7 @@ public class UserDAOImpl implements UserDAO {
         ResultSet rs = null;
         User user = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.createConnection();
             stmt = connection.createStatement();
             log.info("Database query: " + stmt);
 
@@ -52,7 +57,7 @@ public class UserDAOImpl implements UserDAO {
         ResultSet rs = null;
         User user = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.createConnection();
             stmt = connection.createStatement();
             log.info("Database query: " + query);
 
@@ -79,7 +84,7 @@ public class UserDAOImpl implements UserDAO {
         String query = "INSERT INTO User (Name, Email, AuthToken, Enabled) VALUES (?,?,?,?);";
         int userId;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.createConnection();
             preparedStmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             log.info("Database query: " + preparedStmt);
 
@@ -110,7 +115,7 @@ public class UserDAOImpl implements UserDAO {
     public int updateUser(User user) throws SQLException {
         String query = "UPDATE User SET Name = ?, AuthToken = ?, Enabled = ?, LastUpdateTimestamp = NOW() WHERE Id = ? AND Email = ?;";
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.createConnection();
             preparedStmt = connection.prepareStatement(query);
 
             preparedStmt.setString(1, user.getName());
@@ -145,7 +150,7 @@ public class UserDAOImpl implements UserDAO {
         List<User> users = null;
         ResultSet rs = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.createConnection();
             preparedStmt = connection.prepareStatement(query);
             preparedStmt.setInt(1, userId);
 
@@ -181,7 +186,7 @@ public class UserDAOImpl implements UserDAO {
         List<User> users = null;
         ResultSet rs = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.createConnection();
             preparedStmt = connection.prepareStatement(query);
             preparedStmt.setInt(1, userId);
 
@@ -216,7 +221,7 @@ public class UserDAOImpl implements UserDAO {
         ResultSet rs = null;
         User user = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.createConnection();
             stmt = connection.createStatement();
             log.info("Database query: " + stmt);
 
@@ -242,7 +247,7 @@ public class UserDAOImpl implements UserDAO {
     public boolean addUserFriend(int userId, int friendId) throws SQLException {
         String query = "INSERT INTO UserFriends (UserId, FriendId) VALUES (?,?);";
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.createConnection();
             preparedStmt = connection.prepareStatement(query);
             log.info("Database query: " + preparedStmt);
 

@@ -5,6 +5,7 @@ import com.volodymyr.notecase.entity.User;
 import com.volodymyr.notecase.util.ConnectionFactory;
 import com.volodymyr.notecase.util.DBUtil;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ import java.util.List;
 public class ProductDAOImpl implements ProductDAO {
     private static Logger log = Logger.getLogger(ProductDAOImpl.class.getName());
 
+    @Autowired
+    private ConnectionFactory connectionFactory;
     private Connection connection;
     private Statement stmt;
     private PreparedStatement preparedStmt;
@@ -25,7 +28,7 @@ public class ProductDAOImpl implements ProductDAO {
         ResultSet rs = null;
         Product product = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.createConnection();
             stmt = connection.createStatement();
             log.info("Database query: " + stmt);
 
@@ -57,7 +60,7 @@ public class ProductDAOImpl implements ProductDAO {
         int productId;
 
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.createConnection();
             preparedStmt = connection.prepareStatement(query);
             log.info("Database query: " + preparedStmt);
 
@@ -80,7 +83,7 @@ public class ProductDAOImpl implements ProductDAO {
     public void updateProduct(Product product, int userId) throws SQLException {
         String query = "UPDATE Product SET CategoryId = ?, Name = ?, Price = ?, Enabled = ?, LastUpdateTimestamp = NOW() WHERE Uuid = ? AND  UserId = ? AND Enabled = TRUE;";
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.createConnection();
             preparedStmt = connection.prepareStatement(query);
 
             preparedStmt.setInt(1, product.getCategoryId());
@@ -120,7 +123,7 @@ public class ProductDAOImpl implements ProductDAO {
         List<Product> productList = null;
         ResultSet rs = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.createConnection();
             preparedStmt = connection.prepareStatement(query);
             preparedStmt.setTimestamp(1, timestamp);
             log.info("Database query: " + preparedStmt);

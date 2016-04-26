@@ -1,12 +1,9 @@
 package com.volodymyr.notecase.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.xml.internal.ws.server.ServerRtException;
 import com.volodymyr.notecase.entity.User;
 import com.volodymyr.notecase.manager.UserManager;
-import com.volodymyr.notecase.manager.UserManagerImpl;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +18,8 @@ public class UserController {
     private static Logger log = Logger.getLogger(UserController.class.getName());
     public static final String AUTHENTICATION_TOKEN = "AuthToken";
 
-    private UserManager userManager = new UserManagerImpl();
+    @Autowired
+    private UserManager userManager;
 
 //    @RequestMapping(value = "/get/{categoryId}", method = RequestMethod.GET)
 //    public User getUser(@PathVariable int userId){
@@ -35,7 +33,7 @@ public class UserController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public boolean addUser(@RequestBody User user, @RequestHeader(UserController.AUTHENTICATION_TOKEN) String authToken) {
         log.info("Add new User: " + user);
-        if (user == null){
+        if (user == null) {
             return false;
         }
         return userManager.addUser(user.getEmail(), authToken);
@@ -59,8 +57,8 @@ public class UserController {
         return userManager.getAllTrustedUsers(authToken);
     }
 
-    @RequestMapping(value = "/authenticate",method = RequestMethod.POST)
-    public User authenticateUser(@RequestBody String idToken){
+    @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
+    public User authenticateUser(@RequestBody String idToken) {
         log.info("AuthenticateUser post request");
         return userManager.authenticateUser(idToken);
     }
